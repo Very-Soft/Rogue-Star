@@ -47,11 +47,18 @@
 				if (!loc.power_equip && !istype(src.loc,/obj/item) && !APU_power)
 					blind = 1
 
-		if (!blind)
+		if (!blind && deployed)
 			src.sight |= SEE_TURFS
 			src.sight |= SEE_MOBS
 			src.sight |= SEE_OBJS
 			src.see_in_dark = 8
+			src.see_invisible = SEE_INVISIBLE_LIVING
+
+		if(!deployed)
+			src.sight = src.sight&~SEE_TURFS
+			src.sight = src.sight&~SEE_MOBS
+			src.sight = src.sight&~SEE_OBJS
+			src.see_in_dark = 0
 			src.see_invisible = SEE_INVISIBLE_LIVING
 
 			if (aiRestorePowerRoutine==2)
@@ -178,4 +185,3 @@
 /mob/living/silicon/ai/rejuvenate()
 	..()
 	add_ai_verbs(src)
-

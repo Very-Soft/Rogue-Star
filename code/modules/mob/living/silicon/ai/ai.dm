@@ -43,9 +43,9 @@ var/list/ai_verbs_default = list(
 	name = "AI"
 	icon = 'icons/mob/AI.dmi'//
 	icon_state = "ai"
-	anchored = TRUE // -- TLE
+//	anchored = TRUE // -- TLE
 	density = TRUE
-	status_flags = CANSTUN|CANPARALYSE|CANPUSH
+//	status_flags = CANSTUN|CANPARALYSE|CANPUSH
 	shouldnt_see = list(/mob/observer/eye, /obj/effect/rune)
 	var/list/network = list(NETWORK_DEFAULT)
 	var/obj/machinery/camera/camera = null
@@ -97,6 +97,12 @@ var/list/ai_verbs_default = list(
 
 	can_be_antagged = TRUE
 
+	//RS ADD START
+
+	var/deployed = TRUE
+
+	//RS ADD END
+
 /mob/living/silicon/ai/proc/add_ai_verbs()
 	src.verbs |= ai_verbs_default
 	src.verbs |= silicon_subsystems
@@ -132,7 +138,8 @@ var/list/ai_verbs_default = list(
 	if(!is_dummy)
 		aiCommunicator = new /obj/item/device/communicator/integrated(src)
 
-	holo_icon = getHologramIcon(icon('icons/mob/AI.dmi',"holo1"))
+
+//	holo_icon = getHologramIcon(icon('icons/mob/AI.dmi',"holo1"))
 
 	proc_holder_list = new()
 
@@ -335,6 +342,10 @@ var/list/ai_verbs_default = list(
 		qdel(src)
 		return
 	if(powered_ai.APU_power)
+		update_use_power(USE_POWER_OFF)
+		return
+	if(!powered_ai.deployed)
+		loc = powered_ai.loc
 		update_use_power(USE_POWER_OFF)
 		return
 	if(!powered_ai.anchored)
@@ -1016,3 +1027,7 @@ var/list/ai_verbs_default = list(
 
 #undef AI_CHECK_WIRELESS
 #undef AI_CHECK_RADIO
+
+/mob/living/silicon/ai/Login()
+	. = ..()
+	get_character_icon()

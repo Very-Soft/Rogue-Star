@@ -182,7 +182,12 @@
 
 	// If we have an eyeobj, it moves instead
 	if(my_mob.eyeobj)
-		return my_mob.EyeMove(n,direct)
+		if(isAI(my_mob))
+			var/mob/living/silicon/ai/ourai = my_mob
+			if(ourai.deployed)
+				return my_mob.EyeMove(n,direct)
+		else
+			return my_mob.EyeMove(n,direct)
 
 	// This is sota the goto stop mobs from moving var (for some reason)
 	if(my_mob.transforming)

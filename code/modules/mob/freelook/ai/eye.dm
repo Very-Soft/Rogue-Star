@@ -10,7 +10,7 @@
 /mob/observer/eye/aiEye/New()
 	..()
 	visualnet = cameranet
-	
+
 /mob/observer/eye/aiEye/Destroy()
 	if(owner)
 		var/mob/living/silicon/ai/ai = owner
@@ -24,6 +24,9 @@
 		loc = T
 
 		var/mob/living/silicon/ai/ai = owner
+		if(!ai.deployed)
+			return
+
 		if(cancel_tracking)
 			ai.ai_cancel_tracking()
 
