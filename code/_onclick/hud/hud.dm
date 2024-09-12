@@ -184,6 +184,7 @@ var/list/global_huds = list(
 	var/list/other_important
 	var/list/miniobjs
 	var/list/obj/screen/hotkeybuttons
+	var/list/alt	//RS ADD
 
 	var/obj/screen/movable/action_button/hide_toggle/hide_actions_toggle
 	var/action_buttons_hidden = 0

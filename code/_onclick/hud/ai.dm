@@ -1,14 +1,17 @@
-/obj/screen/ai/multicam/Click() 
-    if(..()) 
-        return 
+/mob/living/silicon/ai
+	var/obj/screen/ai_hud_deploy_display = null
+
+/obj/screen/ai/multicam/Click()
+    if(..())
+        return
     var/mob/living/silicon/ai/AI = usr
-    AI.toggle_multicam() 
- 
-/obj/screen/ai/add_multicam/Click() 
-    if(..()) 
-        return 
+    AI.toggle_multicam()
+
+/obj/screen/ai/add_multicam/Click()
+    if(..())
+        return
     var/mob/living/silicon/ai/AI = usr
-    AI.drop_new_multicam() 
+    AI.drop_new_multicam()
 
 /obj/screen/ai/up/Click()
 	var/mob/living/silicon/ai/AI = usr
@@ -25,6 +28,9 @@
 
 	HUD.adding = list()
 	HUD.other = list()
+	HUD.alt = list()
+	HUD.hotkeybuttons = list()
+	HUD.hud_elements = list()
 
 	var/obj/screen/using
 
@@ -154,7 +160,7 @@
 	using.layer = SCREEN_LAYER
 	HUD.adding += using
 
-//Multicamera mode 
+//Multicamera mode
 	using = new /obj/screen/ai/multicam() // special
 	using.name = "Multicamera Mode"
 	using.icon = HUD.ui_style
@@ -162,8 +168,8 @@
 	using.screen_loc = ui_ai_multicam
 	using.layer = SCREEN_LAYER
 	HUD.adding += using
- 
-//Add multicamera camera 
+
+//Add multicamera camera
 	using = new /obj/screen/ai/add_multicam() // special
 	using.name = "New Camera"
 	using.icon = HUD.ui_style
@@ -188,8 +194,190 @@
 	using.screen_loc = ui_ai_updown
 	using.layer = SCREEN_LAYER
 	HUD.adding += using
- 
+
+// COMMON STUFF
+	var/obj/screen/aw
+	var/aw_icon = 'icons/mob/screen/minimalist.dmi'
+
+	aw = new /obj/screen()
+	aw.icon = aw_icon
+	aw.icon_state = "autowhisper"
+	aw.name = "autowhisper"
+	aw.screen_loc = ui_under_health
+	HUD.other |= aw
+
+	aw = new /obj/screen()
+	aw.icon = aw_icon
+	aw.icon_state = "aw-select"
+	aw.name = "autowhisper mode"
+	aw.screen_loc = ui_under_health
+	HUD.other |= aw
+
+	aw = new /obj/screen()
+	aw.icon = aw_icon
+	aw.icon_state = "lang"
+	aw.name = "check known languages"
+	aw.screen_loc = ui_under_health
+	HUD.other |= aw
+
+	aw = new /obj/screen()
+	aw.icon = aw_icon
+	aw.icon_state = "pose"
+	aw.name = "set pose"
+	aw.screen_loc = ui_under_health
+	HUD.other |= aw
+
+	aw = new /obj/screen()
+	aw.icon = aw_icon
+	aw.icon_state = "up"
+	aw.name = "move upwards"
+	aw.screen_loc = ui_under_health
+	HUD.other |= aw
+
+	aw = new /obj/screen()
+	aw.icon = aw_icon
+	aw.icon_state = "down"
+	aw.name = "move downwards"
+	aw.screen_loc = ui_under_health
+	HUD.other |= aw
+
+	ai_hud_deploy_display = new /obj/screen()
+	ai_hud_deploy_display.name = "mode switch"
+	ai_hud_deploy_display.desc = "Toggles between mobile mode or hooking into the network."
+	ai_hud_deploy_display.icon = 'icons/mob/pai_hud.dmi'
+	ai_hud_deploy_display.screen_loc = ui_health
+	ai_hud_deploy_display.icon_state = "folded"
+	HUD.other |= ai_hud_deploy_display
+
+/////////////////////////////////////////////////////
+
+	var/obj/screen/mobile
+	var/mobile_icon = 'icons/mob/pai_hud.dmi'
+
+	mobile = new /obj/screen()
+	mobile.name = I_HELP
+	mobile.icon = mobile_icon
+	mobile.icon_state = "intent_help-s"
+	mobile.screen_loc = ui_acti
+	mobile.alpha = 255
+	mobile.layer = LAYER_HUD_ITEM //These sit on the intent box
+	HUD.alt += mobile
+	HUD.help_intent = mobile
+
+	mobile = new /obj/screen()
+	mobile.name = I_DISARM
+	mobile.icon = mobile_icon
+	mobile.icon_state = "intent_disarm-n"
+	mobile.screen_loc = ui_acti
+	mobile.alpha = 255
+	mobile.layer = LAYER_HUD_ITEM
+	HUD.alt += mobile
+	HUD.disarm_intent = mobile
+
+	mobile = new /obj/screen()
+	mobile.name = I_GRAB
+	mobile.icon = mobile_icon
+	mobile.icon_state = "intent_grab-n"
+	mobile.screen_loc = ui_acti
+	mobile.alpha = 255
+	mobile.layer = LAYER_HUD_ITEM
+	HUD.alt += mobile
+	HUD.grab_intent = mobile
+
+	mobile = new /obj/screen()
+	mobile.name = I_HURT
+	mobile.icon = mobile_icon
+	mobile.icon_state = "intent_harm-n"
+	mobile.screen_loc = ui_acti
+	mobile.alpha = 255
+	mobile.layer = LAYER_HUD_ITEM
+	HUD.alt += mobile
+	HUD.hurt_intent = mobile
+
+	//Move intent (walk/run)
+	mobile = new /obj/screen()
+	mobile.name = "mov_intent"
+	mobile.icon = mobile_icon
+	mobile.icon_state = (m_intent == "run" ? "running" : "walking")
+	mobile.screen_loc = ui_movi
+	mobile.color = "#ffffff"
+	mobile.alpha = 255
+	HUD.alt += mobile
+	HUD.move_intent = mobile
+
+	//Resist button
+	mobile = new /obj/screen()
+	mobile.name = "resist"
+	mobile.icon = mobile_icon
+	mobile.icon_state = "act_resist"
+	mobile.screen_loc = ui_movi
+	mobile.color = "#ffffff"
+	mobile.alpha = 255
+	HUD.alt += mobile
+	HUD.hotkeybuttons += mobile
+
+	//Pull button
+	pullin = new /obj/screen()
+	pullin.icon = mobile_icon
+	pullin.icon_state = "pull0"
+	pullin.name = "pull"
+	pullin.screen_loc = ui_movi
+	HUD.alt += mobile
+	HUD.hotkeybuttons += pullin
+	HUD.hud_elements |= pullin
+
+	//Health status
+	healths = new /obj/screen()
+	healths.icon = mobile_icon
+	healths.icon_state = "health0"
+	healths.name = "health"
+	healths.screen_loc = ui_health
+	HUD.alt += mobile
+	HUD.hud_elements |= healths
+
+	pain = new /obj/screen( null )
+
+	zone_sel = new /obj/screen/zone_sel( null )
+	zone_sel.icon = mobile_icon
+	zone_sel.color = "#ffffff"
+	zone_sel.alpha = 255
+	zone_sel.cut_overlays()
+	zone_sel.update_icon()
+	HUD.alt += mobile
+	HUD.hud_elements |= zone_sel
+
+/////////////////////////////////////////////////////////////////
+
+	mobile = new /obj/screen()
+	mobile.icon = mobile_icon
+	mobile.icon_state = "autowhisper"
+	mobile.name = "autowhisper"
+	mobile.screen_loc = ui_under_health
+	HUD.other |= mobile
+
 	if(client && apply_to_client)
 		client.screen = list()
 		client.screen += HUD.adding + HUD.other
 		client.screen += client.void
+
+/mob/living/silicon/ai/handle_regular_hud_updates()
+	. = ..()
+	if(deployed)
+		ai_hud_deploy_display.icon_state = "folded"
+	else
+		ai_hud_deploy_display.icon_state = "unfolded"
+
+/obj/screen/Click(location, control, params)
+	. = ..()
+	if(!usr)	return 1
+	if(isAI(usr))
+		switch(name)
+			if("mode switch")
+				var/mob/living/silicon/ai/ourAI = usr
+				ourAI.ai_mode_switch()
+				if(!ourAI.deployed)
+					ourAI.client.screen -= ourAI.hud_used.adding
+					ourAI.client.screen |= ourAI.hud_used.alt
+				else
+					ourAI.client.screen -= ourAI.hud_used.alt
+					ourAI.client.screen |= ourAI.hud_used.adding

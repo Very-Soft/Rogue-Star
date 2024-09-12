@@ -16,7 +16,9 @@
 
 	if(control_disabled || stat) return
 
-	if(ismob(A))
+	if(!deployed)		//RS ADD
+		face_atom(A)	//RS ADD
+	else if(ismob(A))
 		ai_actual_track(A)
 	else
 		A.move_camera_by_click()
@@ -25,13 +27,13 @@
 /mob/living/silicon/ai/ClickOn(var/atom/A, params)
 	if(!checkClickCooldown())
 		return
-	
+
 	setClickCooldown(1)
 
 	if(client.buildmode) // comes after object.Click to allow buildmode gui objects to be clicked
 		build_click(src, client.buildmode, params, A)
 		return
-		
+
 	if(multicam_on)
 		var/turf/T = get_turf(A)
 		if(T)
@@ -70,6 +72,10 @@
 
 	A.add_hiddenprint(src)
 	A.attack_ai(src)
+	if(!deployed)		//RS ADD
+		face_atom(A)	//RS ADD
+		if(a_intent == I_GRAB && isliving(A))
+			ai_nom(A)
 
 /*
 	AI has no need for the UnarmedAttack() and RangedAttack() procs,
@@ -78,7 +84,12 @@
 	it functions and re-insert it above.
 */
 /mob/living/silicon/ai/UnarmedAttack(atom/A)
-	A.attack_ai(src)
+	to_world("HELLO FROM UNARMEDATTACK")
+	if(deployed)
+		A.attack_ai(src)
+	else if(a_intent == I_GRAB && isliving(A))
+		ai_nom(A)
+
 /mob/living/silicon/ai/RangedAttack(atom/A)
 	A.attack_ai(src)
 

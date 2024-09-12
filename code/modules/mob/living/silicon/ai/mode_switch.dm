@@ -47,10 +47,10 @@
 		"pai-pdragon"
 		)
 
-/mob/living/silicon/ai/verb/ai_mode_switch()
+/mob/living/silicon/ai/proc/ai_mode_switch()
 	set category = "AI Commands"
 	set name = "Mode Switch"
-	set desc = "Switches modes"
+	set desc = "Toggles between mobile mode or hooking into the network."
 
 
 	deployed = !deployed
