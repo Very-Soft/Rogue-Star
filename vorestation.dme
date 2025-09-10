@@ -2824,6 +2824,7 @@
 #include "code\modules\mob\mob_transformation_simple.dm"
 #include "code\modules\mob\say.dm"
 #include "code\modules\mob\say_vr.dm"
+#include "code\modules\mob\selfclicktoggle.dm"
 #include "code\modules\mob\skillset.dm"
 #include "code\modules\mob\theme_lists.dm"
 #include "code\modules\mob\transform_procs.dm"

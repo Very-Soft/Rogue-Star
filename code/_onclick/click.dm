@@ -287,6 +287,7 @@
 	Unused except for AI
 */
 /mob/proc/AltClickOn(var/atom/A)
+	SEND_SIGNAL(src,COMSIG_CLICK_ALT)
 	A.AltClick(src)
 	return
 

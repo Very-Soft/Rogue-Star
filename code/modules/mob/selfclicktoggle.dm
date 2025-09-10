@@ -66,8 +66,30 @@
 		client.images -= selfinvis
 		client.images -= clickthroughvis.clickthroughimage
 		_clickthrough_unregister_signals()
+		clear_alert("click_through")
 	else
 		client.images += clickthroughvis.clickthroughimage
 		client.images += selfinvis
 		update_clickthrough_image()
 		_clickthrough_register_signals()
+		throw_alert("click_through", /obj/screen/alert/click_through)
+
+/mob/proc/auto_disable_clickthroughself()
+	if(selfinvis)
+		toggle_clickthroughself()
+
+/mob/AltClick(mob/user)
+	. = ..()
+	if(user == src || istype(src,/obj/clickthroughobj))
+		user.toggle_clickthroughself()
+
+/obj/screen/alert/click_through
+	name = "Become Clickable!"
+	desc = "You currently can't click yourself! Click this to return to normal!"
+	icon = 'icons/rogue-star/misc.dmi'
+	icon_state = "notifier"
+
+/obj/screen/alert/click_through/Click()
+	if(ismob(usr))
+		var/mob/M = usr
+		return M.auto_disable_clickthroughself()
