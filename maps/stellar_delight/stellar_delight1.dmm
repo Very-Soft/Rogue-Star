@@ -1055,20 +1055,11 @@
 /turf/simulated/floor,
 /area/maintenance/stellardelight/substation/civilian)
 "ca" = (
-/obj/structure/closet/walllocker_double/engineering/west,
-/obj/item/stack/material/plasteel{
-	amount = 10
+/obj/machinery/computer/cryopod/gateway/redgate{
+	pixel_x = -32
 	},
-/obj/fiftyspawner/steel,
-/obj/fiftyspawner/steel,
-/obj/fiftyspawner/steel,
-/obj/fiftyspawner/rglass,
-/obj/fiftyspawner/rods,
-/obj/fiftyspawner/glass,
-/obj/fiftyspawner/glass,
-/obj/fiftyspawner/glass,
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/turf/simulated/floor/tiled/eris/dark/violetcorener,
+/area/stellardelight/deck1/fore)
 "cb" = (
 /obj/structure/cable/green{
 	color = "#42038a";
@@ -3478,10 +3469,7 @@
 /turf/simulated/floor/carpet,
 /area/stellardelight/deck1/dorms/dorm1)
 "gL" = (
-/obj/machinery/door/firedoor/glass,
-/obj/machinery/door/blast/angled{
-	id = "GatewayShutter"
-	},
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /turf/simulated/floor/tiled/eris/white/gray_platform,
 /area/gateway)
 "gM" = (
@@ -3989,10 +3977,10 @@
 /turf/simulated/floor/tiled/techmaint,
 /area/stellardelight/deck1/fore)
 "hH" = (
-/obj/machinery/door/blast/angled{
-	id = "GatewayShutter"
-	},
-/obj/machinery/door/firedoor/glass,
+/obj/structure/closet/walllocker_double/engineering/west,
+/obj/item/weapon/storage/briefcase/inflatable,
+/obj/item/weapon/storage/briefcase/inflatable,
+/obj/item/weapon/storage/briefcase/inflatable,
 /turf/simulated/floor/tiled/eris/white/gray_platform,
 /area/gateway)
 "hI" = (
@@ -4128,12 +4116,11 @@
 /turf/simulated/floor/tiled/techmaint,
 /area/stellardelight/deck1/starboard)
 "hX" = (
-/obj/structure/closet/walllocker_double/engineering/west,
-/obj/item/weapon/storage/briefcase/inflatable,
-/obj/item/weapon/storage/briefcase/inflatable,
-/obj/item/weapon/storage/briefcase/inflatable,
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/obj/machinery/status_display{
+	pixel_x = 32
+	},
+/turf/simulated/floor/tiled/eris/dark/violetcorener,
+/area/stellardelight/deck1/fore)
 "hY" = (
 /turf/simulated/floor/tiled/eris/dark/danger,
 /area/stellardelight/deck1/port)
@@ -5051,12 +5038,6 @@
 	},
 /turf/simulated/floor/tiled/steel_ridged,
 /area/maintenance/stellardelight/substation/cargo)
-"jP" = (
-/obj/machinery/gateway{
-	dir = 4
-	},
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
 "jQ" = (
 /obj/structure/cable/green{
 	color = "#42038a";
@@ -5356,12 +5337,6 @@
 	},
 /turf/simulated/floor/tiled/eris,
 /area/rnd/xenobiology/xenoflora)
-"kE" = (
-/obj/machinery/gateway{
-	dir = 8
-	},
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
 "kG" = (
 /obj/machinery/computer/security{
 	dir = 8
@@ -5594,9 +5569,6 @@
 	},
 /obj/effect/landmark{
 	name = "JoinLateRedgate"
-	},
-/obj/machinery/computer/cryopod/gateway/redgate{
-	pixel_y = 32
 	},
 /turf/simulated/floor/tiled/eris/dark/danger,
 /area/stellardelight/deck1/port)
@@ -8968,11 +8940,11 @@
 /turf/simulated/floor/carpet,
 /area/stellardelight/deck1/dorms/dorm1)
 "so" = (
-/obj/machinery/gateway{
-	dir = 5
+/obj/machinery/light/small{
+	dir = 4
 	},
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/turf/simulated/floor/tiled/eris/dark/violetcorener,
+/area/stellardelight/deck1/fore)
 "sp" = (
 /obj/machinery/power/apc/angled{
 	dir = 1;
@@ -9890,11 +9862,11 @@
 /turf/simulated/wall/bay/steel,
 /area/maintenance/stellardelight/substation/atmospherics)
 "un" = (
-/obj/machinery/gateway{
-	dir = 9
+/obj/machinery/light/small{
+	dir = 8
 	},
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/turf/simulated/floor/tiled/eris/dark/violetcorener,
+/area/stellardelight/deck1/fore)
 "uo" = (
 /obj/structure/cable/orange{
 	icon_state = "2-4"
@@ -10492,14 +10464,6 @@
 	name = "EVA Shutter";
 	pixel_x = 5;
 	pixel_y = 24;
-	req_one_access = list(18,19,43,67)
-	},
-/obj/machinery/button/remote/blast_door{
-	id = "GatewayShutterW";
-	name = "EVA Shutter";
-	pixel_x = -5;
-	pixel_y = 24;
-	req_access = null;
 	req_one_access = list(18,19,43,67)
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
@@ -17062,8 +17026,18 @@
 /turf/simulated/floor/tiled/white,
 /area/crew_quarters/toilet)
 "Kj" = (
-/obj/machinery/portable_atmospherics/canister/oxygen,
-/obj/machinery/atmospherics/pipe/simple/hidden/supply,
+/obj/structure/closet/walllocker_double/engineering/east,
+/obj/item/stack/material/plasteel{
+	amount = 10
+	},
+/obj/fiftyspawner/steel,
+/obj/fiftyspawner/steel,
+/obj/fiftyspawner/steel,
+/obj/fiftyspawner/rglass,
+/obj/fiftyspawner/rods,
+/obj/fiftyspawner/glass,
+/obj/fiftyspawner/glass,
+/obj/fiftyspawner/glass,
 /turf/simulated/floor/tiled/eris/white/gray_platform,
 /area/gateway)
 "Kk" = (
@@ -17755,12 +17729,6 @@
 /turf/simulated/floor/tiled/steel_ridged,
 /area/chapel/chapel_morgue)
 "LJ" = (
-/obj/machinery/button/remote/blast_door{
-	id = "GatewayShutter";
-	name = "Gateway Shutter";
-	pixel_y = 24;
-	req_access = list(62)
-	},
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 4
 	},
@@ -18174,9 +18142,8 @@
 /turf/simulated/floor/tiled/techmaint,
 /area/stellardelight/deck1/starboard)
 "ME" = (
-/obj/machinery/gateway/centerstation,
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/turf/simulated/floor/tiled/eris/dark/violetcorener,
+/area/stellardelight/deck1/fore)
 "MF" = (
 /obj/structure/table/rack,
 /obj/item/clothing/suit/space/void/mining,
@@ -19046,14 +19013,11 @@
 /turf/simulated/floor/tiled/techmaint,
 /area/stellardelight/deck1/port)
 "Ow" = (
-/obj/machinery/gateway{
-	dir = 6
+/obj/machinery/computer/cryopod/gateway/redgate{
+	pixel_y = 32
 	},
-/obj/machinery/light{
-	dir = 4
-	},
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/turf/simulated/floor/tiled/eris/dark/danger,
+/area/stellardelight/deck1/port)
 "Ox" = (
 /obj/structure/railing/grey{
 	dir = 4
@@ -19891,8 +19855,7 @@
 /turf/simulated/floor/tiled/steel_ridged,
 /area/security/tactical)
 "Qx" = (
-/obj/machinery/gateway,
-/turf/simulated/floor/tiled/eris/white/gray_platform,
+/turf/simulated/floor/tiled/eris/dark/danger,
 /area/gateway)
 "Qy" = (
 /obj/machinery/light/floortube{
@@ -20460,15 +20423,6 @@
 /obj/machinery/hologram/holopad,
 /turf/simulated/floor/tiled/techmaint,
 /area/stellardelight/deck1/aft)
-"RB" = (
-/obj/machinery/gateway{
-	dir = 10
-	},
-/obj/machinery/light{
-	dir = 8
-	},
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
 "RC" = (
 /turf/simulated/wall/bay/red,
 /area/security/warden)
@@ -22607,12 +22561,9 @@
 /turf/simulated/floor/carpet/bcarpet,
 /area/stellardelight/deck1/starboard)
 "VS" = (
-/obj/machinery/gateway{
-	dir = 1
-	},
-/obj/machinery/camera/network/command,
-/turf/simulated/floor/tiled/eris/white/gray_platform,
-/area/gateway)
+/obj/deployable_teleporter,
+/turf/simulated/floor/tiled/eris/dark/violetcorener,
+/area/stellardelight/deck1/fore)
 "VT" = (
 /obj/machinery/conveyor{
 	dir = 8;
@@ -33434,7 +33385,7 @@ Zt
 gj
 Ku
 Ku
-hY
+Ow
 rv
 hY
 LV
@@ -33718,7 +33669,7 @@ Ku
 Ku
 Ku
 Ku
-Ku
+Qx
 ll
 hY
 Rk
@@ -33858,8 +33809,8 @@ Ku
 Kt
 Ca
 vQ
-ca
-hX
+nD
+Ku
 Ku
 Ku
 Ku
@@ -34000,7 +33951,7 @@ YM
 LD
 Se
 XE
-Kj
+db
 cc
 nD
 uM
@@ -34280,10 +34231,10 @@ HF
 mO
 zc
 zW
-YM
+ca
 un
-kE
-RB
+ME
+JJ
 hH
 Av
 gx
@@ -34422,10 +34373,10 @@ fU
 mO
 Ha
 df
-YM
+ME
 VS
 ME
-Qx
+YM
 gL
 zy
 En
@@ -34564,11 +34515,11 @@ aY
 mO
 zc
 zW
-YM
+hX
 so
-jP
-Ow
-gL
+ME
+JJ
+Kj
 Cv
 db
 WT
