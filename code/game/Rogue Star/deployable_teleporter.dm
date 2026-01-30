@@ -36,8 +36,8 @@
 		if(!teleport_active)
 			return
 		if(countdown < 2)
-			playsound(src, 'sound/effects/pop.ogg', 100, 1)
-			playsound(partner, 'sound/effects/pop.ogg', 100, 1)
+			playsound(src, 'sound/effects/pop.ogg', 100, 1,-6)
+			playsound(partner, 'sound/effects/pop.ogg', 100, 1,-6)
 
 /obj/deployable_teleporter/attack_hand(mob/living/user)
 	if(partner)
