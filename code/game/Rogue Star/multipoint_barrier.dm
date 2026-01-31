@@ -1,6 +1,7 @@
 //RS FILE - You can tell I haven't slept because I put comments on the file, I do that when I'm sleepy.
 
 var/global/list/multipoint_triggerable_list = list()	//Rather than searching the whole world for triggerables when we trigger or reset, we just put them in one big list to go through.
+var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset verb (Lira, January 2026)
 
 /obj/multipoint
 	name = "DON'T USE ME"
@@ -189,6 +190,7 @@ var/global/list/multipoint_triggerable_list = list()	//Rather than searching the
 /obj/multipoint_trigger/New(loc, ...)
 	. = ..()
 	trigger_list |= src
+	multipoint_trigger_list |= src // Used for admin-only reset verb (Lira, January 2026)
 
 /obj/multipoint_trigger/Initialize(mapload)
 	. = ..()
@@ -196,6 +198,7 @@ var/global/list/multipoint_triggerable_list = list()	//Rather than searching the
 
 /obj/multipoint_trigger/Destroy()
 	trigger_list -= src
+	multipoint_trigger_list -= src // Used for admin-only reset verb (Lira, January 2026)
 	. = ..()
 
 /obj/multipoint_trigger/update_icon()
@@ -272,7 +275,7 @@ var/global/list/multipoint_triggerable_list = list()	//Rather than searching the
 		if(T.trigger_id == trigger_id)
 			T.trigger()
 
-/obj/multipoint_trigger/verb/reset()	//Maybe you want to bring the barrier back up for whatever reason!
+/obj/multipoint_trigger/proc/reset_trigger()	//Maybe you want to bring the barrier back up for whatever reason! || Tweaked for reset verb (Lira, January 2026)
 	for(var/obj/multipoint/T in multipoint_triggerable_list)
 		if(T.trigger_id == trigger_id)
 			T.untrigger()
@@ -285,7 +288,9 @@ var/global/list/multipoint_triggerable_list = list()	//Rather than searching the
 /obj/multipoint_trigger/Crossed(O)	//You stepped on it instead of clicking it, good work!
 	trigger_check(O)
 
-/client/proc/reset_multipoint_trigger(var/obj/multipoint_trigger/T as obj in view(view))	//You can right click it to reset the trigger, it resets all of the ones connected to it
-	set category = "Fun"
+/client/proc/reset_multipoint_trigger(obj/multipoint_trigger/T in multipoint_trigger_list)	//You can right click it to reset the trigger, it resets all of the ones connected to it || Tweaked for reset verb (Lira, January 2026)
+	set category = null
 	set name = "Reset Barrier Trigger"
-	T.reset()
+	if(!check_rights(R_FUN, show_msg = FALSE))
+		return
+	T.reset_trigger()
