@@ -135,6 +135,12 @@ GLOBAL_LIST_INIT(ghost_spawnable_mobs,list(
 		to_chat(src, "<span class='danger'>You can't spawn on the overmap.</span>")
 		return
 
+	var/area/ourarea = get_area(ourturf)
+
+	if(ourarea.block_phase_shift)
+		to_chat(src, "<span class='danger'>You can't spawn here.</span>")
+		return
+
 	if(ourturf.check_density())
 		to_chat(src, "<span class='danger'>Something is in the way! Try somewhere else!</span>")
 		return
