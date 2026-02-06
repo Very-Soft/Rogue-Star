@@ -120,7 +120,16 @@ GLOBAL_LIST_INIT(ghost_spawnable_mobs,list(
 
 	if(!MayRespawn(1))
 		return
+
+	if(z == using_map.z_list["z_misc"] || z == using_map.z_list["z_centcom"])
+		to_chat(src, "<span class='danger'>You can't spawn on this Z level.</span>")
+		return
+
 	var/turf/ourturf = get_turf(src)
+
+	if(istype(ourturf, /turf/unsimulated/map))
+		to_chat(src, "<span class='danger'>You can't spawn on the overmap.</span>")
+		return
 
 	if(ourturf.check_density())
 		to_chat(src, "<span class='danger'>Something is in the way! Try somewhere else!</span>")
