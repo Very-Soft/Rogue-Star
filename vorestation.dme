@@ -2639,6 +2639,7 @@
 #include "code\modules\instruments\instrument_data\synth_tones.dm"
 #include "code\modules\instruments\songs\_song.dm"
 #include "code\modules\instruments\songs\editor.dm"
+#include "code\modules\instruments\songs\multisynth.dm"
 #include "code\modules\instruments\songs\play_browser.dm"
 #include "code\modules\instruments\songs\play_legacy.dm"
 #include "code\modules\instruments\songs\play_synthesized.dm"
