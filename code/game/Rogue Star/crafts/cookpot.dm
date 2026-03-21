@@ -321,7 +321,7 @@
 	taste_mult = 10
 
 /datum/reagent
-	var/player_sourced = FALSE	//If this reagent is made from or out of some part of a player's body. If true then maybe some preferences can happen
+	var/player_sourced = FALSE	//If this reagent is made from or out of any part of any player's body. If true then maybe some preferences can happen
 
 /datum/reagent/proc/cookpot_interact()
 	return
