@@ -78,6 +78,7 @@
 	action(FALSE)
 
 /obj/listener/proc/action(var/trigger = TRUE)
+	var/multipoint_triggered = FALSE
 	for(var/obj/thing as obj in view(world.view,get_turf(src)))
 		if(istype(thing,/obj/machinery/door/blast))
 			var/obj/machinery/door/blast/B = thing
@@ -101,14 +102,6 @@
 					D.close()
 					D.lock()
 			continue
-		if(istype(thing,/obj/multipoint/barrier))
-			var/obj/multipoint/barrier/B = thing
-			if(listener_id == B.trigger_id)
-				if(trigger)
-					B.trigger()
-				else
-					B.untrigger()
-			continue
 		if(istype(thing,/obj/event_obstical))
 			var/obj/event_obstical/O = thing
 			if(listener_id == O.id)
@@ -128,7 +121,18 @@
 				else
 					D.Close()
 					D.locked = TRUE
-
+			continue
+		if(istype(thing,/obj/multipoint))
+			if(multipoint_triggered)
+				continue
+			multipoint_triggered = TRUE
+			for(var/obj/multipoint/T in multipoint_triggerable_list)
+				if(listener_id == T.trigger_id)
+					if(trigger)
+						T.trigger()
+					else
+						T.untrigger()
+				continue
 /obj/listener/wall
 	icon_state = "listener"
 	density = FALSE
