@@ -1,5 +1,5 @@
 /mob/living/silicon/pai/examine(mob/user)
-	. = ..(user, infix = ", personal AI")
+	. = ..(user, infix = ", [examine_descriptor]")	//RS EDIT
 
 	switch(src.stat)
 		if(CONSCIOUS)

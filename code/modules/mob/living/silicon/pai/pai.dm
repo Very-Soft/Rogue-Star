@@ -113,6 +113,7 @@
 
 	var/datum/tgui_module/pai_chassis_selector/chassis_selector_ui //RS Add: pAI chassis selector UI update (Lira, October 2025)
 	var/list/chassis_preview_cache //RS Add: pAI chassis selector UI update (Lira, October 2025)
+	var/examine_descriptor = "personal AI"	//RS ADD
 
 /mob/living/silicon/pai/New(var/obj/item/device/paicard)
 	src.loc = paicard
@@ -440,9 +441,11 @@
 			var/mob/living/L = user
 			L.game_tag(src)	//RS ADD END
 		visible_message("<span class='notice'>[user.name] pats [src].</span>")
-	else
+	else if(user.a_intent == I_DISARM)	//RS EDIT
 		visible_message("<span class='danger'>[user.name] boops [src] on the head.</span>")
 		close_up()
+	else	//RS ADD
+		..()	//RS ADD
 
 //I'm not sure how much of this is necessary, but I would rather avoid issues.
 /mob/living/silicon/pai/proc/close_up(silent= FALSE)
