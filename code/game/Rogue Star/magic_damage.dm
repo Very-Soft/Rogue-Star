@@ -61,7 +61,8 @@
 		expire()
 		return
 	if(holder.stat == DEAD)
-		holder.ether_death()
+		if(!isbelly(holder.loc))
+			holder.ether_death()
 		expire()
 		return
 	new /obj/particle_emitter/ether_damage/limited(get_turf(holder))
@@ -161,6 +162,14 @@
 	drift = generator("sphere", 0, 2)
 	lifespan = 50
 
+/particles/ether_damage/explosion
+	position = list(0,0)
+	velocity = generator("vector",list(generator("num",-50,0),generator("num",-50,0)),list(generator("num",0,50),generator("num",0,50)))
+	gravity = list(0,0)
+	friction = 0
+	count = 100
+	grow = 1
+
 /particles/ether_damage/fullscreen/medium
 	count = 100
 	spawning = 0.25
@@ -178,14 +187,73 @@
 	anchored = TRUE
 	mouse_opacity = FALSE
 	plane = PLANE_LIGHTING_ABOVE
-	particles = new/particles/ether_damage
+	particles = new/particles/ether_damage/explosion
+	var/aoe_range = 1	//From center, so 1 is a 3x3 square
+	var/safe_duration = 0.5 SECOND
+	var/danger_duration = 3 SECOND
+	var/start_time = 0
+	var/damage_per_tick = 5
+	var/list/ourturfs
+	var/next_phase_time = 0
+	var/phase = 0
 
+/obj/aoe/Initialize(mapload)
+	. = ..()
+	start_time = world.time
+	START_PROCESSING(SSfastprocess,src)
+	particles.width = 32 + (aoe_range * 64)
+	particles.height = 32 + (aoe_range * 64)
+	ourturfs = circlerange(get_turf(src),aoe_range)
+	next_phase_time = world.time + safe_duration
+
+/obj/aoe/Destroy()
+	STOP_PROCESSING(SSfastprocess, src)
+	LAZYCLEARLIST(ourturfs)
+	. = ..()
+
+/obj/aoe/process()
+	switch(phase)
+		if(0)	//Wind up
+			if(world.time > next_phase_time)
+				phase ++
+				next_phase_time = world.time + danger_duration
+				for(var/turf/T in ourturfs)
+					T.color = "#ff0000"
+		if(1)	//Danger
+			if(world.time > next_phase_time)
+				phase ++
+				next_phase_time = world.time + particles.lifespan + 5
+				particles.spawning = 0
+				for(var/turf/T in ourturfs)
+					T.color = null
+			else
+				for(var/turf/T in ourturfs)
+					for(var/mob/living/L in T.contents)
+						if(isliving(L))
+							L.adjustEtherDamage(damage_per_tick)
+							to_world(SPAN_OCCULT("[L.ether_damage]"))
+		if(2)	//Wind Down
+			if(world.time > next_phase_time)
+				qdel(src)
+				return
+
+/obj/aoe/one
+	aoe_range = 0
+/obj/aoe/three
+	aoe_range = 1
+/obj/aoe/five
+	aoe_range = 3
+/obj/aoe/seven
+	aoe_range = 4
+
+
+/*
 /obj/aoe/Crossed(O)
 	if(!isliving(O))
 		return
 	var/mob/living/L = O
 	L.adjustEtherDamage(25)
-
+*/
 /obj/particle_emitter/ether_damage/screen
 	particles = new/particles/ether_damage/fullscreen
 
@@ -196,15 +264,6 @@
 	layer = 18.4
 
 	particles = new/particles/ether_damage/fullscreen
-
-/////
-/mob/living/simple_mob/hostile/seething/handle_ether_damage()
-	health = maxHealth
-	ether_damage = 0.0
-
-/mob/living/simple_mob/hostile/seething_spawner/handle_ether_damage()
-	health = maxHealth
-	ether_damage = 0.0
 
 #undef ED_OVERLAY_LIGHT
 #undef ED_OVERLAY_MEDIUM
