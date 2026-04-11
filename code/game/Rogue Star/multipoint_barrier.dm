@@ -9,7 +9,7 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	icon = 'icons/rogue-star/misc.dmi'
 	icon_state = "box"
 
-	var/trigger_id = "REPLACE ME"		//Use this to set which triggers are connected to eachother and the object they are connected to
+	trigger_id = "REPLACE ME"		//Use this to set which triggers are connected to eachother and the object they are connected to
 
 /obj/multipoint/New(loc, ...)
 	. = ..()
@@ -178,7 +178,7 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 
 	var/triggered_key						//When you press a key, you can't press another key
 	var/static/list/trigger_list = list()	//A list of our fellow triggers to iterate through
-	var/trigger_id = "REPLACE ME"			//Customize this to set which triggers are connected to eachother and the barrier they are connected to
+	trigger_id = "REPLACE ME"				//Customize this to set which triggers are connected to eachother and the barrier they are connected to
 	var/triggered_state = "button-p"
 	var/untriggered_state = "button"
 	var/doubles = FALSE						//If false, the trigger will not allow you to activate a linked trigger if you have already activated one. Any that are true will not care if you pushed another

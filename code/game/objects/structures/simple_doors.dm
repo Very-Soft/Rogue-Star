@@ -17,7 +17,7 @@
 	var/knock_hammer_sound = 'sound/weapons/sonic_jackhammer.ogg'
 
 	var/locked = FALSE	//has the door been locked?
-	var/lock_id = null	//does the door have an associated key?
+	lock_id = null	//does the door have an associated key?	//RS EDIT
 	var/keysound = 'sound/items/toolbelt_equip.ogg'
 
 /obj/structure/simple_door/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
@@ -237,6 +237,12 @@
 	if(!material.radioactivity)
 		return
 	SSradiation.radiate(src, round(material.radioactivity/3))
+
+//RS ADD
+/obj/structure/simple_door/proc/toggle_lock()
+	visible_message(SPAN_NOTICE("\The [src] clunks as it is [locked ? "unlocked" : "locked"]."))
+	locked = !locked
+	playsound(src, keysound,100, 1)
 
 /obj/structure/simple_door/iron/Initialize(mapload,var/material_name)
 	..(mapload, material_name || "iron")

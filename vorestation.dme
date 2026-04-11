@@ -1659,6 +1659,7 @@
 #include "code\game\objects\structures\stool_bed_chair_nest\wheelchair_item.dm"
 #include "code\game\Rogue Star\bus_spawner.dm"
 #include "code\game\Rogue Star\deployable_teleporter.dm"
+#include "code\game\Rogue Star\dungeon_maker.dm"
 #include "code\game\Rogue Star\easter.dm"
 #include "code\game\Rogue Star\effect_trail.dm"
 #include "code\game\Rogue Star\event_tally.dm"
