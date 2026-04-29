@@ -102,8 +102,9 @@
 					D.close()
 					D.lock()
 			continue
-		if(istype(thing,/obj/event_obstical))
-			var/obj/event_obstical/O = thing
+/*
+		if(istype(thing,/obj/dungeon_obstacle))
+			var/obj/dungeon_obstacle/O = thing
 			if(listener_id == O.id)
 				if(trigger)
 					if(O.density)
@@ -112,6 +113,7 @@
 					if(!O.density)
 						O.post_trigger()
 			continue
+*/
 		if(istype(thing,/obj/structure/simple_door))
 			var/obj/structure/simple_door/D = thing
 			if(listener_id == D.lock_id)

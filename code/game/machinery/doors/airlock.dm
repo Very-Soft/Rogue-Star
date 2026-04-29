@@ -1580,3 +1580,19 @@ About the new airlock wires panel:
 			qdel(src)
 			return TRUE
 	return FALSE
+
+//RS ADD START
+/obj/machinery/door/airlock/dungeon_trigger()
+	if(islocked())
+		dungeon_unlock()
+	else
+		dungeon_lock()
+	return TRUE
+
+/obj/machinery/door/airlock/dungeon_unlock()
+	unlock()
+	open()
+	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
+/obj/machinery/door/airlock/dungeon_lock()
+	lock()
+	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)

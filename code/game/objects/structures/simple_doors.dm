@@ -238,12 +238,6 @@
 		return
 	SSradiation.radiate(src, round(material.radioactivity/3))
 
-//RS ADD
-/obj/structure/simple_door/proc/toggle_lock()
-	visible_message(SPAN_NOTICE("\The [src] clunks as it is [locked ? "unlocked" : "locked"]."))
-	locked = !locked
-	playsound(src, keysound,100, 1)
-
 /obj/structure/simple_door/iron/Initialize(mapload,var/material_name)
 	..(mapload, material_name || "iron")
 
@@ -287,3 +281,25 @@
 		if(!iscultist(L) && !istype(L, /mob/living/simple_mob/construct))
 			return
 	..()
+
+//RS ADD START
+/obj/structure/simple_door/dungeon_trigger()
+	if(islocked())
+		dungeon_unlock()
+	else
+		dungeon_lock()
+	return TRUE
+
+/obj/structure/simple_door/dungeon_lock()
+	locked = TRUE
+	visible_message(SPAN_NOTICE("\The [src] clunks as it is locked."))
+	playsound(src, keysound,100, 1)
+	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
+	return TRUE
+
+/obj/structure/simple_door/dungeon_unlock()
+	locked = FALSE
+	visible_message(SPAN_NOTICE("\The [src] clunks as it is unlocked."))
+	playsound(src, keysound,100, 1)
+	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
+	return TRUE
