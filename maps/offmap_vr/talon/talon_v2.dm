@@ -9,6 +9,10 @@ var/global/list/latejoin_talon = list()
 	latejoin_talon += loc // Register this turf as tram latejoin.
 	..()
 
+/datum/map_z_level/talon
+	name = "Talon"
+	flags = MAP_LEVEL_OFFDUTY
+
 /datum/spawnpoint/talon
 	display_name = "ITV Talon Cryo"
 	restrict_job = list("Talon Captain", "Talon Pilot", "Talon Engineer", "Talon Doctor", "Talon Guard", "Talon Miner")
