@@ -9,7 +9,7 @@ var/global/list/latejoin_talon = list()
 	latejoin_talon += loc // Register this turf as tram latejoin.
 	..()
 
-/datum/map_z_level/talon
+/datum/map_z_level/talon // RS Add
 	name = "Talon"
 	flags = MAP_LEVEL_OFFMAP
 
