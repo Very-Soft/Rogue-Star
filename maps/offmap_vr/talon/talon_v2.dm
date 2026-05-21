@@ -11,7 +11,7 @@ var/global/list/latejoin_talon = list()
 
 /datum/map_z_level/talon
 	name = "Talon"
-	flags = MAP_LEVEL_OFFDUTY
+	flags = MAP_LEVEL_OFFMAP
 
 /datum/spawnpoint/talon
 	display_name = "ITV Talon Cryo"
