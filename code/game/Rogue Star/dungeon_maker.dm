@@ -43,8 +43,8 @@
 //	screen_loc = "CENTER,WEST"
 
 /obj/effect/dungeon_maker/holder
-	lock_id = null
-	trigger_id = null
+	var/lock_id = null
+	var/trigger_id = null
 	screen_loc = "WEST,CENTER"
 	icon = null
 	icon_state = null

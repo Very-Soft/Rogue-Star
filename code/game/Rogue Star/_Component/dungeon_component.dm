@@ -15,6 +15,7 @@ var/global/list/dungeon_components = list()
 //LOCK// - It won't work unless you unlock it
 /datum/component/dungeon_mechanic/lock
 	var/locked = TRUE
+	var/onetime = FALSE
 
 /datum/component/dungeon_mechanic/lock/Initialize(var/our_id)
 	. = ..()
@@ -28,7 +29,7 @@ var/global/list/dungeon_components = list()
 		return
 	var/obj/item/key/K = args[2]
 	var/mob/user = args[3]
-	if(K.lock_id == id || K.master_key)
+	if(K.key_id == id || K.master_key)
 		if(!locked && K.one_time)
 			to_chat(user,SPAN_NOTICE("\The [O] is already unlocked! You don't need to use \the [K] on it."))
 			return
@@ -36,12 +37,16 @@ var/global/list/dungeon_components = list()
 			user.visible_message(SPAN_NOTICE("\The [user] inserts \the [K] into \the [O]..."),SPAN_NOTICE("You insert \the [K] into \the [O]..."))
 		if(toggle_lock(O))
 			K.unlocked()
+		else
+			to_chat(user,SPAN_WARNING("While \the [K] fits, \the [O] won't budge! The locking mechanism won't lock again."))
 		return
 
 	if(user)
 		to_chat(user,SPAN_DANGER("\The [K] doesn't fit into \the [O]..."))
 
 /datum/component/dungeon_mechanic/lock/proc/toggle_lock(var/obj/O)
+	if(onetime && !locked)
+		return FALSE
 	locked = !locked
 	if(locked)
 		return O.dungeon_lock()
@@ -98,36 +103,14 @@ var/global/list/dungeon_components = list()
 	return ..()
 
 /datum/component/dungeon_mechanic/trigger/proc/toggle_trigger()
-
 	var/mob/user
-	if(args[2])
+	if(args.len >= 2)
 		user = args[2]
 
-	if(!solo)	//If solo is false then we need to hit ALL of the triggers before the trigger signal will send
-		for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
-			if(T.id != id)
-				continue
-			if(!T.triggered)
-				return
-			if(key_lock)	//If key_lock is true then we need unique ckeys for each trigger.
-				if(!user)
-					return
-				if(!user.ckey)
-					return
-				if(T.triggered_by == user.ckey)
-					to_chat(user,SPAN_WARNING("\The [parent] very unsatisfyingly does nothing when you interact with it. Perhaps someone else needs to interact with this one."))
-					return
-
-	if(triggered)
-		if(onetime)
-			return
-		untrigger()
+	if(!triggered)
+		trigger(user)
 	else
-		trigger()
-		if(user.ckey)
-			triggered_by = user.ckey
-	var/turf/T = get_turf(parent)
-	T.visible_message("\The [parent] clicks audibly as it is triggered...",runemessage = "click...")
+		untrigger()
 
 /datum/component/dungeon_mechanic/trigger/proc/should_key_trigger(var/key)
 	if(!key_lock)
@@ -143,22 +126,59 @@ var/global/list/dungeon_components = list()
 
 	return TRUE
 
-/datum/component/dungeon_mechanic/trigger/proc/trigger()
+/datum/component/dungeon_mechanic/trigger/proc/trigger(var/mob/user)
+	var/signal = TRUE
+	if(!solo)
+		for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
+			if(T == src)
+				continue
+			if(T.id != id)
+				continue
+			if(key_lock)	//If key_lock is true then we need unique ckeys for each trigger.
+				if(!user)
+					return
+				if(!user.ckey)
+					return
+				if(T.triggered_by == user.ckey)
+					to_chat(user,SPAN_WARNING("\The [parent] very unsatisfyingly does nothing when you interact with it. Perhaps someone else needs to interact with this one."))
+					return
+			if(!T.triggered)
+				signal = FALSE
+				var/obj/O = T.parent
+				to_world("[O] on [O.x],[O.y],[O.z] isn't triggered, so we shouldn't send the trigger signal.")
+
+	if(user?.ckey)
+		triggered_by = user.ckey
+
 	triggered = TRUE
 	var/obj/P = parent
 	P.dungeon_trigger()
-	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
+	if(signal)
+		SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
+		to_world("Should have signaled")
+	else
+		to_world("Shouldn't have signaled")
+	var/turf/T = get_turf(parent)
+	T.visible_message("\The [parent] clicks audibly as it is triggered...",runemessage = "click...")
+
 /datum/component/dungeon_mechanic/trigger/proc/untrigger()
+	if(onetime)
+		return
+	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
 	triggered = FALSE
+	triggered_by = null
+
 	var/obj/P = parent
 	P.dungeon_untrigger()
-	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
+
+	var/turf/T = get_turf(parent)
+	T.visible_message("\The [parent] clunks audibly as it is untriggered...",runemessage = "clunk...")
 
 //PAIR// - So things can know about eachother, such as teleporters
 /datum/component/dungeon_mechanic/pair
 	var/list/partner = list()
 
-/datum/component/dungeon_mechanic/pair/New(list/raw_args)
+/datum/component/dungeon_mechanic/pair/Initialize(our_id)
 	. = ..()
 	pair_with_partners()
 
@@ -178,16 +198,19 @@ var/global/list/dungeon_components = list()
 		partner -= P
 
 //////////RELATED OBJ PROCS//////////
-/obj/proc/dungeon_lock(var/mob/user)
+/obj/proc/dungeon_trigger(var/mob/user)	//This is the main trigger action, if you want something that always does the same thing, use this, all the other procs default to this
 	return FALSE
+/obj/proc/dungeon_untrigger(var/mob/user)	//If you need a specific untrigger action
+	dungeon_trigger(user)
 
-/obj/proc/dungeon_unlock(var/mob/user)
-	return FALSE
+/obj/proc/dungeon_lock(var/mob/user)	//If you need a specific lock action
+	dungeon_trigger(user)
 
-/obj/proc/dungeon_trigger(var/mob/user)
-	return FALSE
-/obj/proc/dungeon_untrigger(var/mob/user)
-	return FALSE
+/obj/proc/dungeon_unlock(var/mob/user)	//If you need a specific unlock action
+	dungeon_trigger(user)
+
+/obj/proc/getlock()
+	return GetComponent(/datum/component/dungeon_mechanic/lock)
 
 /obj/proc/islocked()
 	var/datum/component/dungeon_mechanic/lock/ourlock = GetComponent(/datum/component/dungeon_mechanic/lock)
@@ -207,6 +230,12 @@ var/global/list/dungeon_components = list()
 		return trigger.should_key_trigger(user.ckey)
 
 	return TRUE
+
+/obj/proc/istriggered()
+	var/datum/component/dungeon_mechanic/trigger/trigger = GetComponent(/datum/component/dungeon_mechanic/trigger)
+	if(!trigger)
+		return FALSE
+	return trigger.triggered
 
 /obj/proc/get_dungeon_pair()
 	var/datum/component/dungeon_mechanic/pair/P = GetComponent(/datum/component/dungeon_mechanic/pair)

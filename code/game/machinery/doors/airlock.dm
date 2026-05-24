@@ -1582,12 +1582,18 @@ About the new airlock wires panel:
 	return FALSE
 
 //RS ADD START
-/obj/machinery/door/airlock/dungeon_trigger()
-	if(islocked())
-		dungeon_unlock()
+/obj/machinery/door/airlock/dungeon_trigger(mob/user)
+	var/datum/component/dungeon_mechanic/lock/ourlock = getlock()
+	if(ourlock)
+		if(ourlock.locked)
+			dungeon_unlock(user)
+		else if(!ourlock.onetime)
+			dungeon_lock(user)
 	else
-		dungeon_lock()
-	return TRUE
+		if(locked)
+			dungeon_unlock(user)
+		else
+			dungeon_lock(user)
 
 /obj/machinery/door/airlock/dungeon_unlock()
 	unlock()

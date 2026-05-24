@@ -471,6 +471,26 @@
 	width = 2
 	dir = EAST
 
+//RS ADD START
+/obj/machinery/door/blast/dungeon_trigger(mob/user)
+	var/datum/component/dungeon_mechanic/lock/ourlock = getlock()
+	if(ourlock)
+		if(ourlock.locked)
+			dungeon_unlock(user)
+		else if(!ourlock.onetime)
+			dungeon_lock(user)
+	else
+		if(density)
+			dungeon_unlock(user)
+		else
+			dungeon_lock(user)
 
+/obj/machinery/door/blast/dungeon_lock(mob/user)
+	close()
+	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
+/obj/machinery/door/blast/dungeon_unlock(mob/user)
+	open()
+	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
+//RS ADD END
 #undef BLAST_DOOR_CRUSH_DAMAGE
 #undef SHUTTER_CRUSH_DAMAGE

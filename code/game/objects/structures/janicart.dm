@@ -427,7 +427,7 @@ GLOBAL_LIST_BOILERPLATE(all_janitorial_carts, /obj/structure/janitorialcart)
 	if(user.stat || user.stunned || user.weakened || user.paralysis)
 		unbuckle_mob()
 	var/obj/item/key/jani/J = user.get_type_in_hands(/obj/item/key)	//RS EDIT
-	if(J.lock_id == "jani")	//RS EDIT
+	if(J.key_id == "jani")	//RS EDIT
 		step(src, direction)
 		update_mob()
 	else
@@ -499,4 +499,4 @@ GLOBAL_LIST_BOILERPLATE(all_janitorial_carts, /obj/structure/janitorialcart)
 	icon = 'icons/obj/vehicles.dmi'
 	icon_state = "keys"
 	w_class = ITEMSIZE_TINY
-	lock_id = "jani"	//RS ADD
+	key_id = "jani"	//RS ADD

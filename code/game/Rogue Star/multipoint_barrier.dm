@@ -9,8 +9,6 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	icon = 'icons/rogue-star/misc.dmi'
 	icon_state = "box"
 
-	trigger_id = "REPLACE ME"		//Use this to set which triggers are connected to eachother and the object they are connected to
-
 /obj/multipoint/New(loc, ...)
 	. = ..()
 	multipoint_triggerable_list |= src
@@ -37,7 +35,6 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 
 	color = "#fc033d"
 	plane = PLANE_LIGHTING_ABOVE
-	trigger_id = "barrier"		//Use this to set which triggers are connected to eachother and the barrier they are connected to
 
 /obj/multipoint/barrier/Initialize()
 	var/area/A = get_area(src)
@@ -54,6 +51,12 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	density = TRUE
 	alpha = 255
 	plane = PLANE_LIGHTING_ABOVE
+
+/obj/multipoint/barrier/dungeon_trigger(mob/user)
+	trigger()
+
+/obj/multipoint/barrier/dungeon_untrigger(mob/user)
+	untrigger()
 
 /////TELEPORTER/////
 /obj/multipoint/teleporter
@@ -175,11 +178,6 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 /obj/multipoint/teleporter/dungeon_trigger(mob/user)
 	assess_activity()
 
-/obj/multipoint/teleporter/dungeon_lock(mob/user)
-	dungeon_untrigger(user)
-/obj/multipoint/teleporter/dungeon_unlock(mob/user)
-	dungeon_trigger(user)
-
 /////DA BUTTAN/////
 /obj/multipoint_trigger
 	name = "mysterious switch"
@@ -194,7 +192,6 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 
 	var/triggered_key						//When you press a key, you can't press another key
 	var/static/list/trigger_list = list()	//A list of our fellow triggers to iterate through
-	trigger_id = "REPLACE ME"				//Customize this to set which triggers are connected to eachother and the barrier they are connected to
 	var/triggered_state = "button-p"
 	var/untriggered_state = "button"
 	var/doubles = FALSE						//If false, the trigger will not allow you to activate a linked trigger if you have already activated one. Any that are true will not care if you pushed another
@@ -221,7 +218,7 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 
 /obj/multipoint_trigger/update_icon()
 	. = ..()
-	if(!triggered_key)
+	if(!istriggered())
 		icon_state = untriggered_state
 		if(!overlay_state)
 			return
@@ -267,23 +264,9 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER,user)
 
 /obj/multipoint_trigger/dungeon_trigger(mob/user)
-	cut_overlays()
-	icon_state = triggered_state
-
+	update_icon()
 /obj/multipoint_trigger/dungeon_untrigger(mob/user)
-	icon_state = untriggered_state
-	if(!overlay_state)
-		return
-	var/combine_key = "[overlay_state]-[barrier_color]"
-	var/image/our_overlay = overlays_cache[combine_key]
-	if(!our_overlay)
-		our_overlay = image(icon,null,overlay_state)
-		our_overlay.color = barrier_color
-		our_overlay.plane = PLANE_LIGHTING_ABOVE
-		our_overlay.appearance_flags = RESET_COLOR|KEEP_APART|PIXEL_SCALE
-		overlays_cache[combine_key] = our_overlay
-	add_overlay(our_overlay)
-
+	update_icon()
 
 /*
 
@@ -310,7 +293,7 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 		update_icon()
 	if(triggers.len == triggered_triggers)	//We know how many triggers are connected, and how many have been pushed! If the number is the same, then they're all pushed!
 		trigger()	//Woo!
-*/
+
 
 /obj/multipoint_trigger/proc/trigger()
 	for(var/obj/multipoint/T in multipoint_triggerable_list)
@@ -326,13 +309,16 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 		if(T.trigger_id == trigger_id)
 			T.triggered_key = null
 			T.update_icon()
+*/
 
 /obj/multipoint_trigger/Crossed(O)	//You stepped on it instead of clicking it, good work!
 	trigger_check(O)
 
+/*
 /client/proc/reset_multipoint_trigger(obj/multipoint_trigger/T in multipoint_trigger_list)	//You can right click it to reset the trigger, it resets all of the ones connected to it || Tweaked for reset verb (Lira, January 2026)
 	set category = null
 	set name = "Reset Barrier Trigger"
 	if(!check_rights(R_FUN, show_msg = FALSE))
 		return
 	T.reset_trigger()
+*/

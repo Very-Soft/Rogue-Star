@@ -10,6 +10,7 @@
 	var/id = "REPLACE ME"
 	var/list/valid_types = list()
 	var/static/list/overlays_cache = list()
+	var/late = FALSE
 
 /obj/component_adder/New(loc, new_id)
 	. = ..()
@@ -18,6 +19,12 @@
 
 /obj/component_adder/Initialize(mapload)
 	. = ..()
+	if(late)
+		return INITIALIZE_HINT_LATELOAD
+	seek_valid_target()
+	qdel(src)
+
+/obj/component_adder/LateInitialize()
 	seek_valid_target()
 	qdel(src)
 
@@ -74,6 +81,10 @@
 		/obj/dungeon_switch,
 		/obj/multipoint/teleporter
 	)
+	var/onetime = FALSE
+
+/obj/component_adder/lock/onetime
+	onetime = TRUE
 
 /obj/component_adder/lock/consider_overlay_state(var/atom/consider)
 	if(istype(consider,/obj/item/key))
@@ -83,7 +94,7 @@
 /obj/component_adder/lock/special_check(var/atom/consider)
 	if(istype(consider,/obj/item/key))
 		var/obj/item/key/K = consider
-		K.lock_id = id
+		K.key_id = id
 		return TRUE
 	return FALSE
 
@@ -101,13 +112,26 @@
 		/obj/listener
 	)
 	var/onetime = FALSE
+	var/solo = TRUE
+	var/key_lock = FALSE
 
 /obj/component_adder/trigger/onetime
 	onetime = TRUE
+/obj/component_adder/trigger/non_solo
+	solo = FALSE
+/obj/component_adder/trigger/puzzle
+	onetime = TRUE
+	solo = FALSE
+/obj/component_adder/trigger/gather_gate
+	onetime = TRUE
+	solo = FALSE
+	key_lock = TRUE
 
 /obj/component_adder/trigger/add_component()
 	var/datum/component/dungeon_mechanic/trigger/T = ..()
 	T.onetime = onetime
+	T.solo = solo
+	T.key_lock = key_lock
 
 /obj/component_adder/reciever
 	name = "reciever component"
@@ -123,6 +147,7 @@
 		/obj/multipoint/barrier,
 		/obj/structure/portal_event
 	)
+	late = TRUE
 
 /obj/component_adder/pair
 	name = "pair component"

@@ -540,10 +540,11 @@ This device records all warnings given and teleport events for admin review in c
 /obj/structure/simple_door/dungeon/locked
 	locked = TRUE
 	breakable = FALSE
-	lock_id = "dungeon"
+//	lock_id = "dungeon"	//RS REMOVE - Components wahoo
 
-/obj/item/weapon/simple_key/dungeon
+/obj/item/key/dungeon	//RS EDIT
 	name = "old key"
 	desc = "A plain, old-timey key, as one might use to unlock a door."
+	icon = 'icons/obj/keys.dmi'	//RS EDIT
 	icon_state = "dungeon"
 	key_id = "dungeon"

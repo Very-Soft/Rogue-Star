@@ -1,8 +1,4 @@
 //RS FILE
-/obj
-	var/lock_id = null		//Used with keys
-	var/trigger_id = null	//Used with various event things
-
 /obj/item/key
 	name = "key"
 	desc = "A small key made out of some kind of metal."
@@ -10,7 +6,9 @@
 	icon_state = "key"
 	persist_storable = FALSE
 	w_class = ITEMSIZE_TINY
-	lock_id = "key"
+	drop_sound = 'sound/items/drop/ring.ogg'
+	pickup_sound = 'sound/items/pickup/ring.ogg'
+	var/key_id = "key"
 	var/one_time = FALSE	//If true the key will delete itself after use
 	var/master_key = FALSE	//If true then this key can open anything with a configured lock!
 
@@ -49,7 +47,7 @@
 	desc = "It looks quite menacing! Upon very close inspection, there are some impossibly complicated and detailed engravings on this key."
 	icon_state = "big-key"
 	color = "#bb883b"
-	lock_id = "boss"
+	key_id = "boss"
 
 /obj/item/key/onetime
 	one_time = TRUE
@@ -57,6 +55,8 @@
 /obj/item/key/scifi
 	desc = "A small electronic card with a plastic case, with one end bearing exposed contact points for plugging into an electronic lock."
 	icon_state = "scifi-a"
+	drop_sound = 'sound/items/drop/device.ogg'
+	pickup_sound = 'sound/items/pickup/device.ogg'
 	var/static/list/overlays_cache = list()
 	var/contact_color = "#f7b947"
 
@@ -79,7 +79,7 @@
 /obj/item/key/scifi/big
 	icon_state = "scifi-b"
 	desc = "A broad electronic card with a solid metal case. One end has precisely machined contacts exposed for plugging into an electronic lock."
-	lock_id = "boss"
+	key_id = "boss"
 	var/case_color = "#776f85"
 
 /obj/item/key/scifi/big/update_icon()
@@ -96,55 +96,59 @@
 
 /obj/item/key/scifi/red
 	color = "#ff0000"
-	lock_id = "red"
+	key_id = "red"
 /obj/item/key/scifi/blue
 	color = "#003cff"
-	lock_id = "blue"
+	key_id = "blue"
 /obj/item/key/scifi/yellow
 	color = "#ffd900"
-	lock_id = "yellow"
+	key_id = "yellow"
 /obj/item/key/scifi/magenta
 	color = "#cc00ff"
-	lock_id = "magenta"
+	key_id = "magenta"
 
 /obj/item/key/scifi/big/red
 	color = "#ff0000"
 	case_color = "#6b5c5c"
-	lock_id = "red-boss"
+	key_id = "red-boss"
 /obj/item/key/scifi/big/blue
 	color = "#003cff"
 	case_color = "#545c5c"
-	lock_id = "blue-boss"
+	key_id = "blue-boss"
 /obj/item/key/scifi/big/yellow
 	color = "#ffd900"
 	case_color = "#7e5c5c"
-	lock_id = "yellow-boss"
+	key_id = "yellow-boss"
 /obj/item/key/scifi/big/magenta
 	color = "#cc00ff"
 	case_color = "#5a5c5c"
-	lock_id = "magenta-boss"
+	key_id = "magenta-boss"
 
 /obj/item/key/card
 	name = "key card"
 	desc = "A small rectangular card with a magnet strip running along one side."
 	icon_state = "card"
+	drop_sound = 'sound/items/drop/card.ogg'
+	pickup_sound = 'sound/items/pickup/card.ogg'
 
 /obj/item/key/card/red
 	color = "#ff0000"
-	lock_id = "red"
+	key_id = "red"
 /obj/item/key/card/blue
 	color = "#003cff"
-	lock_id = "blue"
+	key_id = "blue"
 /obj/item/key/card/yellow
 	color = "#ffd900"
-	lock_id = "yellow"
+	key_id = "yellow"
 /obj/item/key/card/magenta
 	color = "#cc00ff"
-	lock_id = "magenta"
+	key_id = "magenta"
 
+/*
 /obj/proc/key_event(var/obj/item/key/K)
 	if(!K)
 		return FALSE
-	if((K.master_key && lock_id) || lock_id == K.lock_id)
+	if((K.master_key && key_id) || key_id == K.key_id)
 		return dungeon_trigger(K.one_time)
 	return FALSE
+*/

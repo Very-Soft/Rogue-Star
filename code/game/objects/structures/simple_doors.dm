@@ -17,7 +17,7 @@
 	var/knock_hammer_sound = 'sound/weapons/sonic_jackhammer.ogg'
 
 	var/locked = FALSE	//has the door been locked?
-	lock_id = null	//does the door have an associated key?	//RS EDIT
+//	lock_id = null	//does the door have an associated key?	//RS EDIT
 	var/keysound = 'sound/items/toolbelt_equip.ogg'
 
 /obj/structure/simple_door/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
@@ -154,6 +154,7 @@
 
 /obj/structure/simple_door/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
+	/*//RS REMOVE - components
 	if(istype(W,/obj/item/weapon/simple_key))
 		var/obj/item/weapon/simple_key/key = W
 		if(state)
@@ -165,6 +166,7 @@
 			locked = !locked
 			playsound(src, keysound,100, 1)
 		return
+	*/
 	if(istype(W,/obj/item/weapon/pickaxe) && breakable)
 		var/obj/item/weapon/pickaxe/digTool = W
 		visible_message("<span class='danger'>[user] starts digging [src]!</span>")
@@ -283,12 +285,18 @@
 	..()
 
 //RS ADD START
-/obj/structure/simple_door/dungeon_trigger()
-	if(islocked())
-		dungeon_unlock()
+/obj/structure/simple_door/dungeon_trigger(mob/user)
+	var/datum/component/dungeon_mechanic/lock/ourlock = getlock()
+	if(ourlock)
+		if(ourlock.locked)
+			dungeon_unlock(user)
+		else if(!ourlock.onetime)
+			dungeon_lock(user)
 	else
-		dungeon_lock()
-	return TRUE
+		if(locked)
+			dungeon_unlock(user)
+		else
+			dungeon_lock(user)
 
 /obj/structure/simple_door/dungeon_lock()
 	locked = TRUE

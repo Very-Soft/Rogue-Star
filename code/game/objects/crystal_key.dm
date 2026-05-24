@@ -13,14 +13,6 @@
 	if(!dungeon_trigger(user))
 		to_chat(user,SPAN_WARNING("\The [src] doesn't respond..."))
 
-/obj/dungeon_switch/dungeon_trigger(var/mob/user)
-	if(!cantrigger(user))
-		return FALSE
-	if(icon_state == closed_state)
-		return dungeon_unlock()
-	else
-		return dungeon_lock()
-
 /obj/dungeon_switch/hitby(atom/movable/AM)
 	. = ..()
 	if(isobj(AM))
@@ -30,14 +22,21 @@
 	. = ..()
 	dungeon_trigger()
 
+/obj/dungeon_switch/dungeon_trigger(var/mob/user)
+	if(!cantrigger(user))
+		return FALSE
+	if(icon_state == closed_state)
+		return dungeon_unlock()
+	else
+		return dungeon_lock()
+
 /obj/dungeon_switch/dungeon_lock()
 	var/turf/ourturf = get_turf(src)
 	if(icon_state == closed_state)
 		return FALSE
 	ourturf.visible_message(SPAN_WARNING("\The [src] shimmers as it closes up!!!"),runemessage = "clink")
 	icon_state = closed_state
-	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
-	return TRUE
+	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER,user)
 
 /obj/dungeon_switch/dungeon_unlock()
 	var/turf/ourturf = get_turf(src)
@@ -49,8 +48,7 @@
 	else
 		ourturf.visible_message(SPAN_WARNING("\The [src] flashes as it opens up!!!"),runemessage = "shing")
 		icon_state = open_state
-	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
-	return TRUE
+	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER,user)
 
 //Obstacle//
 
