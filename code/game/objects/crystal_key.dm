@@ -10,16 +10,11 @@
 /obj/dungeon_switch/attack_hand(mob/living/user)
 	. = ..()
 	user.visible_message(SPAN_NOTICE("\The [user] touches \the [src]."),SPAN_NOTICE("You touch \the [src]."),runemessage = "tuch")
-	if(!dungeon_trigger())
+	if(!dungeon_trigger(user))
 		to_chat(user,SPAN_WARNING("\The [src] doesn't respond..."))
 
-/obj/dungeon_switch/dungeon_trigger()
-	return attempt_to_trigger()
-
-/obj/dungeon_switch/proc/attempt_to_trigger()
-	if(islocked())
-		return FALSE
-	if(!cantrigger())
+/obj/dungeon_switch/dungeon_trigger(var/mob/user)
+	if(!cantrigger(user))
 		return FALSE
 	if(icon_state == closed_state)
 		return dungeon_unlock()

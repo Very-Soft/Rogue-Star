@@ -71,7 +71,8 @@
 		/obj/structure/simple_door,
 		/obj/dungeon_obstacle,
 		/obj/machinery/door/blast,
-		/obj/dungeon_switch
+		/obj/dungeon_switch,
+		/obj/multipoint/teleporter
 	)
 
 /obj/component_adder/lock/consider_overlay_state(var/atom/consider)
@@ -95,22 +96,51 @@
 		/obj/dungeon_switch,
 		/obj/machinery/door/airlock,
 		/obj/structure/simple_door,
-		/obj/machinery/door/blast
+		/obj/machinery/door/blast,
+		/obj/multipoint_trigger,
+		/obj/listener
 	)
 	var/onetime = FALSE
+
+/obj/component_adder/trigger/onetime
+	onetime = TRUE
 
 /obj/component_adder/trigger/add_component()
 	var/datum/component/dungeon_mechanic/trigger/T = ..()
 	T.onetime = onetime
 
-/obj/component_adder/link
-	name = "link component"
-	icon_state = "link"
-	component_type = /datum/component/dungeon_mechanic/link
+/obj/component_adder/reciever
+	name = "reciever component"
+	icon_state = "reciever"
+	component_type = /datum/component/dungeon_mechanic/reciever
 	valid_types = list(
 		/obj/machinery/door/airlock,
 		/obj/structure/simple_door,
 		/obj/dungeon_obstacle,
 		/obj/machinery/door/blast,
-		/obj/dungeon_switch
+		/obj/dungeon_switch,
+		/obj/multipoint/teleporter,
+		/obj/multipoint/barrier,
+		/obj/structure/portal_event
 	)
+
+/obj/component_adder/pair
+	name = "pair component"
+	icon_state = "pair"
+	component_type = /datum/component/dungeon_mechanic/pair
+	valid_types = list(
+		/obj/multipoint/teleporter,
+		/obj/structure/portal_event
+	)
+
+/*
+/obj/proc/add_component_overlays()
+	var/list/didit = list()
+	for(var/datum/component/C in components)
+		if(C in didit)
+			continue
+		didit += C
+		if(!hasvar(C,overlay_icon))
+
+	return
+*/

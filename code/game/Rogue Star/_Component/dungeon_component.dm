@@ -12,7 +12,7 @@ var/global/list/dungeon_components = list()
 
 	dungeon_components |= src
 
-//Locks//
+//LOCK// - It won't work unless you unlock it
 /datum/component/dungeon_mechanic/lock
 	var/locked = TRUE
 
@@ -48,21 +48,21 @@ var/global/list/dungeon_components = list()
 	else
 		return O.dungeon_unlock()
 
-//LINK//
-/datum/component/dungeon_mechanic/link
+//RECIEVER// - The thing that gets told what to do
+/datum/component/dungeon_mechanic/reciever
 
-/datum/component/dungeon_mechanic/link/Initialize(var/our_id)
+/datum/component/dungeon_mechanic/reciever/Initialize(var/our_id)
 	. = ..()
 	for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
 		if(T == src)
 			continue
-		if(T.type != /datum/component/dungeon_mechanic/trigger)
+		if(!istype(T,/datum/component/dungeon_mechanic/trigger))
 			continue
 		if(T.id == id)
 			RegisterSignal(T,COMSIG_DUNGEON_TRIGGER,PROC_REF(link_trigger))
 			RegisterSignal(T,COMSIG_DUNGEON_UNTRIGGER,PROC_REF(link_trigger))
 
-/datum/component/dungeon_mechanic/link/Destroy(force, silent)
+/datum/component/dungeon_mechanic/reciever/Destroy(force, silent)
 	dungeon_components -= src
 	for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
 		if(id == T.id)
@@ -70,14 +70,18 @@ var/global/list/dungeon_components = list()
 			UnregisterSignal(T,COMSIG_DUNGEON_UNTRIGGER)
 	return ..()
 
-/datum/component/dungeon_mechanic/link/proc/link_trigger()
+/datum/component/dungeon_mechanic/reciever/proc/link_trigger()
 	var/obj/O = parent
 	O.dungeon_trigger()
 
-//TRIGGER//
+//TRIGGER// - The thing that tells other things to do things
 /datum/component/dungeon_mechanic/trigger
-	var/triggered = FALSE
-	var/onetime = FALSE
+	var/triggered = FALSE	//Are we triggered or untriggered
+	var/onetime = FALSE		//If true we can only be triggered, once triggered, we can not be untriggered
+	var/solo = TRUE			//If FALSE will require ALL of the triggers with the same ID to be triggered before it will send the trigger signal
+	var/key_lock = FALSE	//If TRUE (and solo is FALSE) requires unique ckeys to hit each trigger
+	var/triggered_by		//A recording of who triggered the trigger (only relevent if key_lock is TRUE)
+
 /datum/component/dungeon_mechanic/trigger/Initialize(our_id)
 	. = ..()
 	RegisterSignal(parent, COMSIG_DUNGEON_TRIGGER , PROC_REF(toggle_trigger))
@@ -88,31 +92,101 @@ var/global/list/dungeon_components = list()
 	UnregisterSignal(parent, COMSIG_DUNGEON_TRIGGER)
 	UnregisterSignal(parent, COMSIG_DUNGEON_UNTRIGGER)
 
-	for(var/datum/component/dungeon_mechanic/link/L in dungeon_components)
+	for(var/datum/component/dungeon_mechanic/reciever/L in dungeon_components)
 		if(id == L.id)
 			L.UnregisterSignal(src,COMSIG_DUNGEON_TRIGGER)
 	return ..()
 
 /datum/component/dungeon_mechanic/trigger/proc/toggle_trigger()
+
+	var/mob/user
+	if(args[2])
+		user = args[2]
+
+	if(!solo)	//If solo is false then we need to hit ALL of the triggers before the trigger signal will send
+		for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
+			if(T.id != id)
+				continue
+			if(!T.triggered)
+				return
+			if(key_lock)	//If key_lock is true then we need unique ckeys for each trigger.
+				if(!user)
+					return
+				if(!user.ckey)
+					return
+				if(T.triggered_by == user.ckey)
+					to_chat(user,SPAN_WARNING("\The [parent] very unsatisfyingly does nothing when you interact with it. Perhaps someone else needs to interact with this one."))
+					return
+
 	if(triggered)
-		if(!onetime)
-			untrigger()
+		if(onetime)
+			return
+		untrigger()
 	else
 		trigger()
+		if(user.ckey)
+			triggered_by = user.ckey
+	var/turf/T = get_turf(parent)
+	T.visible_message("\The [parent] clicks audibly as it is triggered...",runemessage = "click...")
+
+/datum/component/dungeon_mechanic/trigger/proc/should_key_trigger(var/key)
+	if(!key_lock)
+		return TRUE
+
+	for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
+		if(T.id != id)
+			continue
+		if(!T.triggered_by)
+			continue
+		if(T.triggered_by == key)
+			return FALSE
+
+	return TRUE
 
 /datum/component/dungeon_mechanic/trigger/proc/trigger()
 	triggered = TRUE
+	var/obj/P = parent
+	P.dungeon_trigger()
+	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
 /datum/component/dungeon_mechanic/trigger/proc/untrigger()
 	triggered = FALSE
+	var/obj/P = parent
+	P.dungeon_untrigger()
+	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
+
+//PAIR// - So things can know about eachother, such as teleporters
+/datum/component/dungeon_mechanic/pair
+	var/list/partner = list()
+
+/datum/component/dungeon_mechanic/pair/New(list/raw_args)
+	. = ..()
+	pair_with_partners()
+
+/datum/component/dungeon_mechanic/pair/proc/pair_with_partners()
+	for(var/datum/component/dungeon_mechanic/pair/P in dungeon_components)
+		if(P.type != type)
+			continue
+		if(P == src)
+			continue
+		if(id == P.id)
+			partner |= P
+			P.partner |= src
+
+/datum/component/dungeon_mechanic/pair/proc/unpair_with_partners()
+	for(var/datum/component/dungeon_mechanic/pair/P in partner)
+		P.partner -= src
+		partner -= P
 
 //////////RELATED OBJ PROCS//////////
-/obj/proc/dungeon_lock()
+/obj/proc/dungeon_lock(var/mob/user)
 	return FALSE
 
-/obj/proc/dungeon_unlock()
+/obj/proc/dungeon_unlock(var/mob/user)
 	return FALSE
 
-/obj/proc/dungeon_trigger()
+/obj/proc/dungeon_trigger(var/mob/user)
+	return FALSE
+/obj/proc/dungeon_untrigger(var/mob/user)
 	return FALSE
 
 /obj/proc/islocked()
@@ -121,10 +195,24 @@ var/global/list/dungeon_components = list()
 		return TRUE
 	return FALSE
 
-/obj/proc/cantrigger()
+/obj/proc/cantrigger(var/mob/user)
 	var/datum/component/dungeon_mechanic/trigger/trigger = GetComponent(/datum/component/dungeon_mechanic/trigger)
 	if(!trigger)
 		return FALSE
 	if(trigger.onetime && trigger.triggered)
 		return FALSE
+	if(trigger.key_lock)
+		if(!user.ckey)
+			return FALSE
+		return trigger.should_key_trigger(user.ckey)
+
 	return TRUE
+
+/obj/proc/get_dungeon_pair()
+	var/datum/component/dungeon_mechanic/pair/P = GetComponent(/datum/component/dungeon_mechanic/pair)
+	if(!P)
+		return FALSE
+	if(P.partner)
+		if(P.partner.len <= 0)
+			return FALSE
+	return P.partner

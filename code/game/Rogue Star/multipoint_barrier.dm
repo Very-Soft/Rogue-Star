@@ -137,16 +137,14 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 /obj/multipoint/teleporter/proc/teleport(var/to_teleport)
 	if(!to_teleport)
 		return
-	var/list/targlist = list()
-	for(var/obj/multipoint/teleporter/tele in teleporters_list)
-		if(tele == src)
-			continue
-		if(tele.teleport_id == teleport_id)
-			targlist |= tele
-
+	var/list/targlist = get_dungeon_pair()
+	if(!targlist)
+		return
 	if(targlist.len <= 0)
-		toggle_active()
-	teleport_to_opposite_side_or_randomize(to_teleport,src,pick(targlist))
+		return
+	var/datum/component/dungeon_mechanic/pair/P = pick(targlist)
+	var/obj/target = P.parent
+	teleport_to_opposite_side_or_randomize(to_teleport,src,target)
 
 /obj/multipoint/teleporter/proc/toggle_active()
 	density = !density
@@ -157,12 +155,30 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	update_icon()
 
 /obj/multipoint/teleporter/proc/assess_activity()
+	var/list/targs = get_dungeon_pair()
+	if(!targs)
+		return
+	if(targs.len <= 0)
+		return
+
+	toggle_active()
+
+/*
 	for(var/obj/multipoint/teleporter/tele in teleporters_list)
 		if(tele == src)
 			continue
 		if(tele.teleport_id == teleport_id)
 			toggle_active()
 			return
+*/
+
+/obj/multipoint/teleporter/dungeon_trigger(mob/user)
+	assess_activity()
+
+/obj/multipoint/teleporter/dungeon_lock(mob/user)
+	dungeon_untrigger(user)
+/obj/multipoint/teleporter/dungeon_unlock(mob/user)
+	dungeon_trigger(user)
 
 /////DA BUTTAN/////
 /obj/multipoint_trigger
@@ -248,6 +264,29 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 		return
 	if(!user.ckey)	//Players only
 		return
+	SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER,user)
+
+/obj/multipoint_trigger/dungeon_trigger(mob/user)
+	cut_overlays()
+	icon_state = triggered_state
+
+/obj/multipoint_trigger/dungeon_untrigger(mob/user)
+	icon_state = untriggered_state
+	if(!overlay_state)
+		return
+	var/combine_key = "[overlay_state]-[barrier_color]"
+	var/image/our_overlay = overlays_cache[combine_key]
+	if(!our_overlay)
+		our_overlay = image(icon,null,overlay_state)
+		our_overlay.color = barrier_color
+		our_overlay.plane = PLANE_LIGHTING_ABOVE
+		our_overlay.appearance_flags = RESET_COLOR|KEEP_APART|PIXEL_SCALE
+		overlays_cache[combine_key] = our_overlay
+	add_overlay(our_overlay)
+
+
+/*
+
 	var/key_detect = FALSE	//If true, we discovered the user's ckey on one of the triggers we care about
 	var/list/triggers = list()	//We will gather a list of our triggers to compare to how many are triggered
 	var/triggered_triggers = 0	//This is what we will compare triggers against.
@@ -271,6 +310,7 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 		update_icon()
 	if(triggers.len == triggered_triggers)	//We know how many triggers are connected, and how many have been pushed! If the number is the same, then they're all pushed!
 		trigger()	//Woo!
+*/
 
 /obj/multipoint_trigger/proc/trigger()
 	for(var/obj/multipoint/T in multipoint_triggerable_list)

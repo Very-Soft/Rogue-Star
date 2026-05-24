@@ -18,7 +18,10 @@
 /obj/structure/portal_event/Initialize()
 	. = ..()
 	event_portal_list += src
+	seek_link()	//RS ADD
 
+//RS EDIT START - Generalized the logic so I can use it elsewhere too
+/obj/structure/portal_event/proc/seek_link()
 	if(portal_id && !target)
 		for(var/obj/structure/portal_event/P in event_portal_list)
 			if(P == src)
@@ -27,6 +30,7 @@
 				target = P
 				target.target = src
 				toggle_portal()			//RS ADD END
+//RS EDIT END
 
 /obj/structure/portal_event/Destroy()
 	event_portal_list -= src			//RS EDIT
@@ -49,6 +53,7 @@
 		return
 	return
 
+/* // RS REMOVE - Do not crash the server please and thank you
 /obj/structure/portal_event/Crossed(AM as mob|obj)
 	if(istype(AM,/mob) && !(istype(AM,/mob/living)))
 		return	//do not send ghosts, zshadows, ai eyes, etc
@@ -56,6 +61,7 @@
 		src.teleport(AM)
 		return
 	return
+*/
 
 /obj/structure/portal_event/attack_hand(mob/user as mob)
 	if(!istype(user))
@@ -338,5 +344,3 @@
 			toggle_portal()
 		else
 			return
-
-//RS ADD END

@@ -149,6 +149,9 @@
 					M.close()
 					return
 
+/obj/machinery/button/remote/blast_door/dungeon_trigger()
+	trigger()
+
 /*
 	Emitter remote control
 */
