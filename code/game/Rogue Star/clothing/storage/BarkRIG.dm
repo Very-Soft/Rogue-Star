@@ -2,15 +2,21 @@
 //
 // All things commented out with a /* are -maybe- for the future
 /obj/item/weapon/storage/rig
+	parent_type = /obj/item/weapon/storage/backpack
 	name = "R.I.G. module"
 	desc = "A R.I.G. link, displaying user health on the back."
 	icon = 'code/game/Rogue Star/icons/clothing/storage/RigAcc.dmi'
-	icon_override = 'code/game/Rogue Star/icons/clothing/storage/RigAcc.dmi'
 	icon_state = "itemsprite"
 	item_state = "base_onmob"
-	item_icons = list(slot_wear_suit_str = 'code/game/Rogue Star/icons/clothing/storage/RigAcc.dmi')
+	item_icons = list(slot_back_str = 'code/game/Rogue Star/icons/clothing/storage/RigAcc.dmi',
+		slot_l_hand_str = 'icons/mob/items/lefthand_storage.dmi',
+		slot_r_hand_str = 'icons/mob/items/righthand_storage.dmi',
+		)
+	item_state_slots = list(
+		slot_l_hand_str = "backpack",
+		slot_r_hand_str = "backpack"
+		)
 	armor = list(melee = 0, bullet = 0, laser = 0, energy = 0, bomb = 0, bio = 0, rad = 0)
-
 	w_class = ITEMSIZE_LARGE
 	slot_flags = SLOT_BACK
 	max_w_class = ITEMSIZE_LARGE
@@ -40,21 +46,23 @@
 		cut_overlays()
 		return
 	//Overlay start
+	var ohealth = owner.health
 	cut_overlays()
 	if(!inhands)
-		if(owner.health == (owner.maxHealth))
+		var/effective_max_health = owner.getMaxHealth()
+		if(ohealth == (effective_max_health))
 			//to_chat(owner, "<span class='notice'>health100</span>")
 			standing.add_overlay(image(icon, "onmob_100"))
 			add_overlay(image(icon, "item_100"))
-		else if(owner.health < (owner.maxHealth) && owner.health >= (owner.maxHealth *0.5))
+		else if(ohealth < (effective_max_health) && ohealth >= (effective_max_health *0.5))
 			//to_chat(owner, "<span class='notice'>health75</span>")
 			standing.add_overlay(image(icon, "onmob_75"))
 			add_overlay(image(icon, "item_75"))
-		else if(owner.health < (owner.maxHealth *0.5) && owner.health >= (owner.maxHealth * 0.0))
+		else if(ohealth < (effective_max_health *0.5) && ohealth >= (effective_max_health * 0.0))
 			//to_chat(owner, "<span class='notice'>health50</span>")
 			standing.add_overlay(image(icon, "onmob_50"))
 			add_overlay(image(icon, "item_50"))
-		else if(owner.health < (owner.maxHealth *0.0) && (owner.health >= owner.maxHealth * -0.5))
+		else if(ohealth < (effective_max_health *0.0) && (ohealth >= effective_max_health * -0.5))
 			//to_chat(owner, "<span class='notice'>health25</span>")
 			standing.add_overlay(image(icon, "onmob_25"))
 			add_overlay(image(icon, "item_25"))
