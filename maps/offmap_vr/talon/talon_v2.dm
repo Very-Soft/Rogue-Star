@@ -74,7 +74,6 @@ var/global/list/latejoin_talon = list()
 	spawn(1)
 		var/my_z = src.z
 		if(my_z && global.using_map)
-			// Проверяем и создаем датум Z-уровня
 			var/datum/map_z_level/T = global.using_map.zlevels["[my_z]"]
 			if(!T)
 				T = new /datum/map_z_level/talon(global.using_map)
