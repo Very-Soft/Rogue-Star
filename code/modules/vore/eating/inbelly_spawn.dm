@@ -23,7 +23,7 @@ Please do not abuse this ability.
 			continue
 		if(pred.no_vore)						// No vore, no bellies, no inbelly spawning
 			continue
-		if(!(get_z(pred) in using_map.station_levels) && !using_map.offmap_levels.Find(get_z(pred))) // RS Edit
+		if(!(get_z(pred) in using_map.station_levels) && !(get_z(pred) in using_map.offmap_levels)) // RS Edit
 			continue
 		if(ishuman(pred))
 			var/mob/living/carbon/human/H = pred
