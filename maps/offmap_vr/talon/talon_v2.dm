@@ -64,13 +64,6 @@ var/global/list/latejoin_talon = list()
 	levels_for_distress += using_map.z_list["z_fueldepot"]
 	. = ..()	//RS ADD END
 
-	spawn(1)//RS ADD
-		var/my_z = src.z
-		if(my_z && global.using_map)
-			global.using_map.offmap_levels |= my_z
-			global.using_map.player_levels |= my_z
-			global.using_map.contact_levels |= my_z
-
 // The shuttle's 'shuttle' computer
 /obj/machinery/computer/shuttle_control/explore/talonboat
 	name = "shuttle control console"
