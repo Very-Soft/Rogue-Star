@@ -71,7 +71,7 @@ var/list/holder_mob_icon_cache = list()
 /obj/item/weapon/holder/Entered(mob/held, atom/OldLoc, var/do_vis = TRUE)	//RS EDIT
 	if(held_mob)
 		held.forceMove(get_turf(src))
-		held.reset_view(null)
+		held.reset_view_after_container_exit() // RS Edit: Fix micro holder camera bug (Lira, April 2026)
 		return
 	ASSERT(ismob(held))
 	. = ..()
@@ -114,7 +114,7 @@ var/list/holder_mob_icon_cache = list()
 		held_mob.update_transform() //VOREStation edit
 		held_mob.vis_flags = original_vis_flags
 		held_mob.forceMove(get_turf(src))
-		held_mob.reset_view(null)
+		held_mob.reset_view_after_container_exit() // RS Edit: Fix micro holder camera bug (Lira, April 2026)
 		held_mob = null
 	invisibility = INVISIBILITY_ABSTRACT //VOREStation edit
 
@@ -370,6 +370,7 @@ var/list/holder_mob_icon_cache = list()
 		to_chat(src, "<span class='notice'>\The [grabber] scoops you up!</span>")
 
 	add_attack_logs(grabber, H.held_mob, "Scooped up", FALSE) // Not important enough to notify admins, but still helpful.
+	record_character_memory_pair(grabber, H.held_mob, "picked_up", "as_holder", "as_held") // RS Add: Persistent memory system (Lira, May 2026)
 	return H
 
 /obj/item/weapon/holder/human
