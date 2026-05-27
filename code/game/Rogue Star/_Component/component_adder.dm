@@ -9,7 +9,6 @@
 	var/component_type
 	var/id = "REPLACE ME"
 	var/list/valid_types = list()
-	var/static/list/overlays_cache = list()
 	var/late = FALSE
 
 /obj/component_adder/New(loc, new_id)
@@ -37,30 +36,13 @@
 			continue
 		for(var/type_check in valid_types)
 			if(istype(thing,type_check))
-				var/overlay_state = consider_overlay_state(thing)
 				if(!special_check(thing))
 					add_component(thing)
-				do_overlay(thing,overlay_state)
 
 /obj/component_adder/proc/add_component(var/atom/target)
 	if(!target)
 		return
-	. = target.LoadComponent(component_type,id)
-
-/obj/component_adder/proc/do_overlay(var/atom/target,var/overlay_state)
-	if(!target)
-		return
-	if(!overlay_state)
-		overlay_state = "[icon_state]_s"
-	var/key = "[overlay_state]-[color]"
-	var/image/overlay = overlays_cache[key]
-	if(!overlay)
-		overlay = image(icon,null,overlay_state)
-		overlay.color = color
-		overlay.plane = PLANE_ADMIN_SECRET
-		overlay.appearance_flags = RESET_COLOR|KEEP_APART|PIXEL_SCALE
-		overlays_cache[key] = overlay
-	target.add_overlay(overlay)
+	. = target.LoadComponent(component_type,id,color)
 
 /obj/component_adder/proc/consider_overlay_state(var/atom/consider)
 	return null
@@ -73,30 +55,44 @@
 	icon_state = "lock"
 	component_type = /datum/component/dungeon_mechanic/lock
 	valid_types = list(
-		/obj/item/key,
 		/obj/machinery/door/airlock,
 		/obj/structure/simple_door,
 		/obj/dungeon_obstacle,
 		/obj/machinery/door/blast,
 		/obj/dungeon_switch,
-		/obj/multipoint/teleporter
+		/obj/multipoint/teleporter,
+		/obj/structure/closet,
+		/obj/structure/portal_event
 	)
 	var/onetime = FALSE
 
-/obj/component_adder/lock/onetime
+/obj/component_adder/lock/add_component(atom/target)
+	var/datum/component/dungeon_mechanic/lock/L = ..()
+	L.onetime = onetime
+
+/obj/component_adder/key
+	name = "key component"
+	icon_state = "key"
+	component_type = /datum/component/dungeon_mechanic/key
+	valid_types = list(
+		/obj/item/key,
+		/obj/item/weapon/card
+	)
+	var/onetime = FALSE
+	var/master = FALSE
+
+/obj/component_adder/key/add_component(atom/target)
+	var/datum/component/dungeon_mechanic/key/K = ..()
+	K.onetime = onetime
+	K.master_key = master
+
+/obj/component_adder/key/onetime
 	onetime = TRUE
-
-/obj/component_adder/lock/consider_overlay_state(var/atom/consider)
-	if(istype(consider,/obj/item/key))
-		return "key"
-	return null
-
-/obj/component_adder/lock/special_check(var/atom/consider)
-	if(istype(consider,/obj/item/key))
-		var/obj/item/key/K = consider
-		K.key_id = id
-		return TRUE
-	return FALSE
+/obj/component_adder/key/master
+	master = TRUE
+/obj/component_adder/key/onetime_master
+	onetime = TRUE
+	master = TRUE
 
 /obj/component_adder/trigger
 	name = "trigger component"
@@ -157,15 +153,4 @@
 		/obj/multipoint/teleporter,
 		/obj/structure/portal_event
 	)
-
-/*
-/obj/proc/add_component_overlays()
-	var/list/didit = list()
-	for(var/datum/component/C in components)
-		if(C in didit)
-			continue
-		didit += C
-		if(!hasvar(C,overlay_icon))
-
-	return
-*/
+	late = TRUE

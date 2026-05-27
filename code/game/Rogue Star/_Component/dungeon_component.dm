@@ -3,17 +3,40 @@ var/global/list/dungeon_components = list()
 
 /datum/component/dungeon_mechanic
 	var/id = "REPLACE ME"
+	var/overlay_icon = 'icons/rogue-star/component_adder.dmi'
+	var/overlay_state
+	var/overlay_color = "#1ae200"
+	var/static/list/overlays_cache = list()
 
-/datum/component/dungeon_mechanic/Initialize(var/our_id)
+/datum/component/dungeon_mechanic/Initialize(var/our_id,var/our_color)
 	if(!isobj(parent))
 		return COMPONENT_INCOMPATIBLE
 	if(our_id)
 		id = our_id
-
+	if(our_color)
+		overlay_color = our_color
 	dungeon_components |= src
+	var/obj/O = parent
+	RegisterSignal(O, COMSIG_ATOM_UPDATE_ICON , PROC_REF(add_component_overlay))
+	add_component_overlay()
+
+/datum/component/dungeon_mechanic/proc/add_component_overlay()
+	if(!overlay_state)
+		return
+	var/key = "[overlay_state]-[overlay_color]"
+	var/image/overlay = overlays_cache[key]
+	if(!overlay)
+		overlay = image(overlay_icon,null,overlay_state)
+		overlay.color = overlay_color
+		overlay.plane = PLANE_ADMIN_SECRET
+		overlay.appearance_flags = RESET_COLOR|KEEP_APART|PIXEL_SCALE
+		overlays_cache[key] = overlay
+	var/obj/O = parent
+	O.add_overlay(overlay)
 
 //LOCK// - It won't work unless you unlock it
 /datum/component/dungeon_mechanic/lock
+	overlay_state = "lock_s"
 	var/locked = TRUE
 	var/onetime = FALSE
 
@@ -21,40 +44,55 @@ var/global/list/dungeon_components = list()
 	. = ..()
 	var/obj/O = parent
 	O.dungeon_lock()
-	RegisterSignal(parent, COMSIG_KEY_ATTACK , PROC_REF(key_interact))
-
-/datum/component/dungeon_mechanic/lock/proc/key_interact()
-	var/obj/O = parent
-	if(!istype(args[2],/obj/item/key))
-		return
-	var/obj/item/key/K = args[2]
-	var/mob/user = args[3]
-	if(K.key_id == id || K.master_key)
-		if(!locked && K.one_time)
-			to_chat(user,SPAN_NOTICE("\The [O] is already unlocked! You don't need to use \the [K] on it."))
-			return
-		if(user)
-			user.visible_message(SPAN_NOTICE("\The [user] inserts \the [K] into \the [O]..."),SPAN_NOTICE("You insert \the [K] into \the [O]..."))
-		if(toggle_lock(O))
-			K.unlocked()
-		else
-			to_chat(user,SPAN_WARNING("While \the [K] fits, \the [O] won't budge! The locking mechanism won't lock again."))
-		return
-
-	if(user)
-		to_chat(user,SPAN_DANGER("\The [K] doesn't fit into \the [O]..."))
 
 /datum/component/dungeon_mechanic/lock/proc/toggle_lock(var/obj/O)
-	if(onetime && !locked)
-		return FALSE
 	locked = !locked
 	if(locked)
-		return O.dungeon_lock()
+		O.dungeon_lock()
 	else
-		return O.dungeon_unlock()
+		O.dungeon_unlock()
+
+//KEY// - The thing that asks locks to unlock
+/datum/component/dungeon_mechanic/key
+	overlay_state = "key_s"
+	var/onetime = FALSE
+	var/master_key = FALSE
+
+/datum/component/dungeon_mechanic/key/Initialize(our_id, our_color)
+	. = ..()
+	RegisterSignal(parent, COMSIG_RESOLVE_ATTACKBY , PROC_REF(lock_interact))
+
+/datum/component/dungeon_mechanic/key/proc/lock_interact()
+	var/obj/O = args[2]
+	if(!isobj(O))
+		return
+	var/mob/living/user = args[3]
+	var/datum/component/dungeon_mechanic/lock/L = O.getlock()
+	if(!L)
+		return
+
+	if(id == L.id || master_key)
+		if(!L.locked && onetime)
+			to_chat(user,SPAN_NOTICE("\The [O] is already unlocked! You don't need to use \the [parent] on it."))
+			return
+		if(user)
+			user.visible_message(SPAN_NOTICE("\The [user] inserts \the [parent] into \the [O]..."),SPAN_NOTICE("You insert \the [parent] into \the [O]..."))
+		unlocked(user)
+		L.toggle_lock(O)
+
+	else if(user)
+		to_chat(user,SPAN_DANGER("\The [parent] doesn't fit into \the [O]..."))
+
+/datum/component/dungeon_mechanic/key/proc/unlocked(var/mob/user)
+	if(onetime)
+		if(user)
+			to_chat(user,SPAN_DANGER("\The [parent] crumbles away to dust after being used."))
+			user.drop_from_inventory(parent,get_turf(user))
+		qdel(parent)
 
 //RECIEVER// - The thing that gets told what to do
 /datum/component/dungeon_mechanic/reciever
+	overlay_state = "reciever_s"
 
 /datum/component/dungeon_mechanic/reciever/Initialize(var/our_id)
 	. = ..()
@@ -81,11 +119,13 @@ var/global/list/dungeon_components = list()
 
 //TRIGGER// - The thing that tells other things to do things
 /datum/component/dungeon_mechanic/trigger
+	overlay_state = "trigger_s"
 	var/triggered = FALSE	//Are we triggered or untriggered
 	var/onetime = FALSE		//If true we can only be triggered, once triggered, we can not be untriggered
 	var/solo = TRUE			//If FALSE will require ALL of the triggers with the same ID to be triggered before it will send the trigger signal
 	var/key_lock = FALSE	//If TRUE (and solo is FALSE) requires unique ckeys to hit each trigger
 	var/triggered_by		//A recording of who triggered the trigger (only relevent if key_lock is TRUE)
+	var/last_triggered = 0
 
 /datum/component/dungeon_mechanic/trigger/Initialize(our_id)
 	. = ..()
@@ -103,6 +143,8 @@ var/global/list/dungeon_components = list()
 	return ..()
 
 /datum/component/dungeon_mechanic/trigger/proc/toggle_trigger()
+	if(last_triggered + 2 > world.time)
+		return
 	var/mob/user
 	if(args.len >= 2)
 		user = args[2]
@@ -127,6 +169,7 @@ var/global/list/dungeon_components = list()
 	return TRUE
 
 /datum/component/dungeon_mechanic/trigger/proc/trigger(var/mob/user)
+	last_triggered = world.time
 	var/signal = TRUE
 	if(!solo)
 		for(var/datum/component/dungeon_mechanic/trigger/T in dungeon_components)
@@ -144,8 +187,6 @@ var/global/list/dungeon_components = list()
 					return
 			if(!T.triggered)
 				signal = FALSE
-				var/obj/O = T.parent
-				to_world("[O] on [O.x],[O.y],[O.z] isn't triggered, so we shouldn't send the trigger signal.")
 
 	if(user?.ckey)
 		triggered_by = user.ckey
@@ -155,15 +196,13 @@ var/global/list/dungeon_components = list()
 	P.dungeon_trigger()
 	if(signal)
 		SEND_SIGNAL(src,COMSIG_DUNGEON_TRIGGER)
-		to_world("Should have signaled")
-	else
-		to_world("Shouldn't have signaled")
 	var/turf/T = get_turf(parent)
 	T.visible_message("\The [parent] clicks audibly as it is triggered...",runemessage = "click...")
 
 /datum/component/dungeon_mechanic/trigger/proc/untrigger()
 	if(onetime)
 		return
+	last_triggered = world.time
 	SEND_SIGNAL(src,COMSIG_DUNGEON_UNTRIGGER)
 	triggered = FALSE
 	triggered_by = null
@@ -176,6 +215,7 @@ var/global/list/dungeon_components = list()
 
 //PAIR// - So things can know about eachother, such as teleporters
 /datum/component/dungeon_mechanic/pair
+	overlay_state = "pair_s"
 	var/list/partner = list()
 
 /datum/component/dungeon_mechanic/pair/Initialize(our_id)
@@ -183,6 +223,7 @@ var/global/list/dungeon_components = list()
 	pair_with_partners()
 
 /datum/component/dungeon_mechanic/pair/proc/pair_with_partners()
+	var/paired = FALSE
 	for(var/datum/component/dungeon_mechanic/pair/P in dungeon_components)
 		if(P.type != type)
 			continue
@@ -191,6 +232,11 @@ var/global/list/dungeon_components = list()
 		if(id == P.id)
 			partner |= P
 			P.partner |= src
+			var/obj/O = P.parent
+			O.dungeon_pair()
+	if(paired)
+		var/obj/ourparent = parent
+		ourparent.dungeon_pair()
 
 /datum/component/dungeon_mechanic/pair/proc/unpair_with_partners()
 	for(var/datum/component/dungeon_mechanic/pair/P in partner)
@@ -209,6 +255,13 @@ var/global/list/dungeon_components = list()
 /obj/proc/dungeon_unlock(var/mob/user)	//If you need a specific unlock action
 	dungeon_trigger(user)
 
+/obj/proc/dungeon_pair()
+	if(islocked())
+		return FALSE
+	if(getreciever())
+		return FALSE
+	return TRUE
+
 /obj/proc/getlock()
 	return GetComponent(/datum/component/dungeon_mechanic/lock)
 
@@ -223,6 +276,8 @@ var/global/list/dungeon_components = list()
 	if(!trigger)
 		return FALSE
 	if(trigger.onetime && trigger.triggered)
+		return FALSE
+	if(trigger.last_triggered + 2 > world.time)
 		return FALSE
 	if(trigger.key_lock)
 		if(!user.ckey)
@@ -245,3 +300,15 @@ var/global/list/dungeon_components = list()
 		if(P.partner.len <= 0)
 			return FALSE
 	return P.partner
+
+/obj/proc/getkey()
+	var/datum/component/dungeon_mechanic/key/K = GetComponent(/datum/component/dungeon_mechanic/key)
+	if(!K)
+		return FALSE
+	return K
+
+/obj/proc/getreciever()
+	var/datum/component/dungeon_mechanic/reciever/R = GetComponent(/datum/component/dungeon_mechanic/reciever)
+	if(!R)
+		return FALSE
+	return R

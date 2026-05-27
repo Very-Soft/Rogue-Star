@@ -85,14 +85,6 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 		return
 	toggle_active()
 
-/obj/multipoint/teleporter/New(loc, ...)
-	. = ..()
-	teleporters_list |= src
-
-/obj/multipoint/teleporter/Destroy()
-	teleporters_list -= src
-	. = ..()
-
 /obj/multipoint/teleporter/Bumped(AM)
 	. = ..()
 
@@ -116,8 +108,8 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	teleport(usr)
 
 /obj/multipoint/teleporter/update_icon()
-	. = ..()
 	cut_overlays()
+	. = ..()
 	if(density)
 		icon_state = active_state
 		if(!teleporter_overlay)
@@ -166,17 +158,21 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 
 	toggle_active()
 
-/*
-	for(var/obj/multipoint/teleporter/tele in teleporters_list)
-		if(tele == src)
-			continue
-		if(tele.teleport_id == teleport_id)
-			toggle_active()
-			return
-*/
-
 /obj/multipoint/teleporter/dungeon_trigger(mob/user)
 	assess_activity()
+
+/obj/multipoint/teleporter/dungeon_lock(mob/user)
+	if(!density)
+		return
+	density = FALSE
+	update_icon()
+	visible_message(SPAN_DANGER("\The [src] shuts down..."),runemessage = "...")
+
+/obj/multipoint/teleporter/dungeon_pair()
+	. = ..()
+
+	if(.)
+		assess_activity()
 
 /////DA BUTTAN/////
 /obj/multipoint_trigger
@@ -217,6 +213,7 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 	. = ..()
 
 /obj/multipoint_trigger/update_icon()
+	cut_overlays()
 	. = ..()
 	if(!istriggered())
 		icon_state = untriggered_state
@@ -232,7 +229,6 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 			overlays_cache[combine_key] = our_overlay
 		add_overlay(our_overlay)
 	else
-		cut_overlays()
 		icon_state = triggered_state
 
 /obj/multipoint_trigger/Click(location, control, params)	//You clicked it instead of stepping on it, what a weirdo, you don't know where it's been (it doesn't move)
@@ -268,57 +264,5 @@ var/global/list/multipoint_trigger_list = list()		// Used for admin-only reset v
 /obj/multipoint_trigger/dungeon_untrigger(mob/user)
 	update_icon()
 
-/*
-
-	var/key_detect = FALSE	//If true, we discovered the user's ckey on one of the triggers we care about
-	var/list/triggers = list()	//We will gather a list of our triggers to compare to how many are triggered
-	var/triggered_triggers = 0	//This is what we will compare triggers against.
-	for(var/obj/multipoint_trigger/T in trigger_list)
-		if(trigger_id == T.trigger_id)	//If our trigger_id is the same then we're controlling the same thing so we'll count it!
-			triggers |= T
-			if(T.triggered_key)	//Someone pushed it
-				triggered_triggers ++	//Count it!
-				if(T.triggered_key == user.ckey)	//It's our user!!!
-					key_detect = TRUE
-
-	if(key_detect && !doubles)	//We have already pushed another button. - If doubles, then we don't care if another button was pushed, it'll still push.
-		if(!triggered_key)	//This button has not been pushed though, let's give a hint instead of doing nothing.
-			to_chat(user,SPAN_WARNING("\The [src] very unsatisfyingly does nothing when you interact with it. Perhaps someone else needs to interact with this one."))
-		return
-
-	if(!triggered_key)	//Our button wasn't pushed already and we did the checks we needed to see if we are allowed to push the button!
-		visible_message("\The [src] clicks audibly as it is triggered...",runemessage = "click...")	//nice
-		triggered_key = user.ckey	//We register the ckey so that you can't do shenanigans.
-		triggered_triggers ++	//Don't forget to count yourself, you might be the last one!
-		update_icon()
-	if(triggers.len == triggered_triggers)	//We know how many triggers are connected, and how many have been pushed! If the number is the same, then they're all pushed!
-		trigger()	//Woo!
-
-
-/obj/multipoint_trigger/proc/trigger()
-	for(var/obj/multipoint/T in multipoint_triggerable_list)
-		if(T.trigger_id == trigger_id)
-			T.trigger()
-
-/obj/multipoint_trigger/proc/reset_trigger()	//Maybe you want to bring the barrier back up for whatever reason! || Tweaked for reset verb (Lira, January 2026)
-	for(var/obj/multipoint/T in multipoint_triggerable_list)
-		if(T.trigger_id == trigger_id)
-			T.untrigger()
-
-	for(var/obj/multipoint_trigger/T in trigger_list)
-		if(T.trigger_id == trigger_id)
-			T.triggered_key = null
-			T.update_icon()
-*/
-
 /obj/multipoint_trigger/Crossed(O)	//You stepped on it instead of clicking it, good work!
 	trigger_check(O)
-
-/*
-/client/proc/reset_multipoint_trigger(obj/multipoint_trigger/T in multipoint_trigger_list)	//You can right click it to reset the trigger, it resets all of the ones connected to it || Tweaked for reset verb (Lira, January 2026)
-	set category = null
-	set name = "Reset Barrier Trigger"
-	if(!check_rights(R_FUN, show_msg = FALSE))
-		return
-	T.reset_trigger()
-*/

@@ -1,75 +1,88 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
-"aH" = (
-/obj/multipoint_trigger{
-	trigger_id = "REPLACE ME WITH A STRING"
-	},
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
-/area/submap/admin_upload/powlit)
-"bC" = (
-/obj/multipoint/teleporter{
-	teleport_id = "event_example";
-	trigger_id = "portal_example_2"
+"aC" = (
+/obj/item/weapon/paper{
+	info = "The multipoint trigger can be used in a couple of ways. When triggered, it will check to see if there are any other /multipoint_trigger in the world which share its trigger_id variable. If so, and any of them are not also triggered, then it will do nothing. If all triggers sharing a trigger_id are triggered, then it will attempt to trigger any /multipoint object in the world that shares its trigger_id. There are two variants of the /multipoint_trigger, the base type requires each trigger to be pressed by a player of a different ckey, requiring as many players as there are triggers. The /puzzle variant does not require different ckeys to be triggered, and will allow one person to trigger as many as they can find. These can be reset by using the 'reset barrier trigger' verb! ----- Important variables: trigger_id";
+	name = "/multipoint_trigger"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
-"bK" = (
-/obj/dungeon_obstacle/disguised,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
+"aH" = (
+/obj/machinery/door/airlock,
+/obj/component_adder/lock{
+	color = "yellow";
+	id = "le1"
 	},
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"bC" = (
+/obj/item/stack/material/flint,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"bK" = (
+/obj/component_adder/reciever{
+	id = "listener_example"
+	},
+/obj/dungeon_obstacle/pillar,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "cf" = (
-/obj/item/key/onetime,
-/turf/unsimulated/spookygrass{
-	color = "#666666"
+/obj/component_adder/trigger{
+	id = "listener_example"
 	},
+/obj/listener,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "dj" = (
+/obj/component_adder/trigger/onetime{
+	id = "event_key_1"
+	},
+/obj/dungeon_switch,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"dn" = (
+/obj/component_adder/reciever{
+	color = "yellow";
+	id = "event_key_2"
+	},
+/obj/dungeon_obstacle/pillar,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"dS" = (
+/obj/component_adder/trigger/gather_gate{
+	color = "red";
+	id = "portal_example_2"
+	},
+/obj/multipoint_trigger/puzzle,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"dZ" = (
+/obj/item/key,
+/obj/component_adder/key{
+	color = "yellow";
+	id = "le1"
+	},
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"er" = (
+/obj/item/weapon/paper{
+	info = "Basic /multipoint_trigger switches do not allow the same ckey to trigger more than one trigger for triggers sharing the same trigger_id. These triggers are impossible for only one person to trigger, unless there is only one with the given trigger_id.";
+	name = "/multipoint_trigger example"
+	},
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"gA" = (
 /obj/item/weapon/paper{
 	info = "/The listener triggers off of players speaking in say. If they say the appropriate password, any configured object in sight range of the listener will be triggered! For /multipoint objects it works at global range, just because that's easy, and that's how those are intended to work. For other kinds of doors though it only works in sight range, in part because that's just intuitive, but also because searching the whole world for a door with the right id_tag might lag the server!!! Anyway, you can say 'example' to trigger this. You can also aghost and click the listener to configure it to add or remove passwords, or trigger/untrigger it.";
 	name = "/listener example"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
-"dn" = (
-/obj/multipoint_trigger/puzzle,
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
-/area/submap/admin_upload/powlit)
-"dS" = (
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
-	},
-/area/submap/admin_upload/powlit)
-"dZ" = (
-/obj/listener{
-	listener_id = "REPLACE ME WITH A STRING"
-	},
-/turf/unsimulated/spookygrass,
-/area/submap/admin_upload/powlit)
-"er" = (
-/obj/machinery/door/blast/angled{
-	id = "listener_example"
-	},
-/turf/unsimulated/spookygrass,
-/area/submap/admin_upload/powlit)
-"gA" = (
-/obj/effect/bus_spawner,
-/turf/unsimulated/spookygrass{
-	color = "#666666"
-	},
-/area/submap/admin_upload/powlit)
 "ih" = (
 /obj/item/weapon/paper{
-	info = "Contrary to its name, the bus_spawner does not spawn buses. The bus_spawner allows you to spawn things with modified properties repeatedly. So for example if you want to be able to repeatedly dispense an object with an altered sprite, name, and description, this would allow you to do that without manually editing them over and over. The bus spawner needs a type path to function. To get started, you will need to click on the object, where you can enter a partial path. From there it will run through each of the variables it supports. After it is set up, clicking on it again will spawn whatever you configured it to spawn!";
-	name = "/bus_spawner"
+	info = "The /event_key can be triggered by clicking on it, or by impacting it with a thrown object!";
+	name = "/event_key example"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#666666"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "jk" = (
 /turf/unsimulated/spookygrass{
@@ -77,84 +90,96 @@
 	},
 /area/submap/admin_upload/powlit)
 "kn" = (
-/obj/dungeon_obstacle/pillar{
-	id = "listener_example"
+/obj/component_adder/pair{
+	color = "cyan";
+	id = "event_example"
 	},
+/obj/component_adder/reciever{
+	id = "portal_example_1"
+	},
+/obj/multipoint/teleporter,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
-"kC" = (
-/turf/simulated/floor/lava,
-/area/submap/admin_upload/powlit)
 "ly" = (
-/obj/multipoint/teleporter{
-	teleport_id = "listener_example";
-	trigger_id = "listener_example"
+/obj/item/weapon/paper{
+	info = "/teleporter starts inactive, and can be activated by certain trigger objects! Teleporters will only be triggered by things seeking to trigger their trigger_id, and will only teleport to teleporters that share their teleporter_id. If you give different teleporters different trigger_ids but the same teleporter_id, the teleporters will work as one way teleporters until both sides are triggered.";
+	name = "/teleporter example"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "lN" = (
-/obj/item/weapon/paper{
-	info = "REPLACE ME";
-	name = "/key"
+/obj/component_adder/pair{
+	color = "cyan";
+	id = "event_example"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#666666"
+/obj/component_adder/reciever{
+	color = "red";
+	id = "portal_example_2"
 	},
+/obj/multipoint/teleporter,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "mB" = (
-/obj/item/weapon/paper{
-	info = "Objectives are a generic item that is easy to track. They are intended to have their name, description,  icon and/or icon_state changed. They don’t really do anything on their own, but they can be tracked using the fun > report objectives verb, which will print all of their current locations, along with a convenient jump link!";
-	name = "/objective"
+/obj/component_adder/reciever{
+	id = "listener_example"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#666666"
-	},
-/area/submap/admin_upload/powlit)
-"nd" = (
-/obj/item/weapon/paper{
-	info = "Basic /multipoint_trigger switches do not allow the same ckey to trigger more than one trigger for triggers sharing the same trigger_id. These triggers are impossible for only one person to trigger, unless there is only one with the given trigger_id.";
-	name = "/multipoint_trigger example"
+/obj/structure/simple_door/iron,
+/obj/component_adder/lock{
+	id = "nuffin"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
+"nd" = (
+/obj/component_adder/reciever{
+	id = "listener_example"
+	},
+/obj/machinery/door/blast/angled,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
 "nu" = (
-/obj/dungeon_obstacle/pillar{
-	id = "event_key_2"
+/obj/item/weapon/paper{
+	info = "/puzzle switches like these can all be triggered by only one person! Because their trigger_id is the same, they all need to be pressed to activate their teleporter.";
+	name = "/puzzle example"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "nv" = (
-/obj/machinery/door/airlock{
-	id_tag = "listener_example"
-	},
-/turf/unsimulated/spookygrass,
+/turf/simulated/floor/lava,
 /area/submap/admin_upload/powlit)
 "oz" = (
-/obj/item/stack/material/flint,
+/obj/component_adder/reciever{
+	id = "listener_example"
+	},
+/obj/multipoint/barrier,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "pA" = (
-/obj/multipoint/teleporter{
-	teleport_id = "REPLACE ME WITH A STRING";
-	trigger_id = "REPLACE ME WITH A STRING"
+/obj/multipoint/teleporter,
+/obj/component_adder/reciever{
+	color = "magenta";
+	id = "e3"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
+/obj/component_adder/pair{
+	id = "linka"
 	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "ru" = (
-/obj/dungeon_obstacle/pillar,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
+/obj/multipoint_trigger/puzzle,
+/obj/component_adder/trigger/puzzle{
+	id = "portal_example_1"
 	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "rK" = (
-/obj/dungeon_obstacle{
-	id = "REPLACE ME WITH A STRING"
+/obj/listener{
+	password_list = list("example")
 	},
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
+/obj/component_adder/trigger{
+	color = "magenta";
+	id = "e3"
 	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "tc" = (
 /mob/living/simple_mob/vore/woof/cass,
@@ -164,59 +189,60 @@
 /area/submap/admin_upload/powlit)
 "uw" = (
 /obj/item/weapon/paper{
-	info = "The listener essentially listens for the crew to say a password. This can be configured and adjusted by staff while ghosting by clicking on the listener. Listeners can have as many passwords as you like. The listener will trigger even if a person says a password as a part of a larger message, so for example if your password is 'fire' and someone says 'Where is the fireman?' within sight range of the listener, the listener will trigger. You can even set it to only accept inputs given in one of the various languages. The listener can trigger a variety of things, including /door/blast with a matching id, /door/airlock with a matching id_tag, /simple_door with a matching lock_id, /event_obstical with a matching id, and /multipoint with a matching trigger_id. ----- Important variables: listener_id";
-	name = "/listener"
+	info = "REPLACE ME";
+	name = "/key"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "uA" = (
-/obj/item/weapon/paper{
-	info = "The multipoint trigger can be used in a couple of ways. When triggered, it will check to see if there are any other /multipoint_trigger in the world which share its trigger_id variable. If so, and any of them are not also triggered, then it will do nothing. If all triggers sharing a trigger_id are triggered, then it will attempt to trigger any /multipoint object in the world that shares its trigger_id. There are two variants of the /multipoint_trigger, the base type requires each trigger to be pressed by a player of a different ckey, requiring as many players as there are triggers. The /puzzle variant does not require different ckeys to be triggered, and will allow one person to trigger as many as they can find. These can be reset by using the 'reset barrier trigger' verb! ----- Important variables: trigger_id";
-	name = "/multipoint_trigger"
+/obj/component_adder/reciever{
+	id = "event_key_1"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
+/obj/dungeon_obstacle/pillar,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "vw" = (
-/obj/item/objective,
-/turf/unsimulated/spookygrass{
-	color = "#666666"
+/obj/component_adder/trigger{
+	color = "yellow";
+	id = "event_key_2"
 	},
+/obj/dungeon_switch,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "vT" = (
 /turf/unsimulated/wall/dark,
 /area/submap/admin_upload/powlit)
 "wc" = (
-/obj/multipoint/barrier{
-	trigger_id = "listener_example"
+/obj/component_adder/reciever{
+	id = "listener_example"
+	},
+/obj/machinery/door/airlock,
+/obj/component_adder/lock{
+	id = "nuffin"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "xa" = (
 /obj/item/weapon/paper{
-	info = "Each of these obsticals works the same way, they just come in many flavors. Normally once these are triggered, they are destroyed. There are /toggle variants of certain ones which will instead toggle between a passable and impassable state, which can allow for more complicated puzzles. ----- Important variables: id";
-	name = "/event_obstical"
-	},
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
-	},
-/area/submap/admin_upload/powlit)
-"xS" = (
-/obj/dungeon_obstacle/pillar{
-	id = "event_key_1"
+	info = "The listener essentially listens for the crew to say a password. This can be configured and adjusted by staff while ghosting by clicking on the listener. Listeners can have as many passwords as you like. The listener will trigger even if a person says a password as a part of a larger message, so for example if your password is 'fire' and someone says 'Where is the fireman?' within sight range of the listener, the listener will trigger. You can even set it to only accept inputs given in one of the various languages. The listener can trigger a variety of things, including /door/blast with a matching id, /door/airlock with a matching id_tag, /simple_door with a matching lock_id, /event_obstical with a matching id, and /multipoint with a matching trigger_id. ----- Important variables: listener_id";
+	name = "/listener"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "yA" = (
-/obj/dungeon_obstacle/wall/cult,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
+/obj/component_adder/reciever{
+	id = "listener_example"
 	},
+/obj/multipoint/teleporter,
+/obj/component_adder/pair{
+	id = "event_example1"
+	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "yH" = (
-/obj/dungeon_switch{
-	id = "event_key_1"
+/obj/item/weapon/paper{
+	info = "With the /reusable subtype and a /toggle subtype of /event_obstical, it is possible to create obsticles that can be toggled back and forth. This can make for some very interesting puzzles.";
+	name = "/event_key/reusable example"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
@@ -225,25 +251,21 @@
 	info = "The trait adder allows any trait to be added to any character that passes over it. Apply the path of a trait to the 'trait' variable to get it to work. This can be used to ensure the players have a trait if they need it for your event. Useful for sneakily adding darksight onto people, or giving them special abilities!";
 	name = "/trait_adder"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#666666"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "By" = (
-/obj/multipoint/barrier{
-	trigger_id = "REPLACE ME WITH A STRING"
+/obj/dungeon_obstacle,
+/obj/component_adder/reciever{
+	id = "e1"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "CP" = (
-/obj/dungeon_switch{
-	id = "REPLACE ME WITH A STRING"
+/obj/dungeon_switch,
+/obj/component_adder/trigger{
+	id = "e1"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "CW" = (
 /turf/unsimulated/spookygrass{
@@ -251,32 +273,36 @@
 	},
 /area/submap/admin_upload/powlit)
 "Ee" = (
-/obj/dungeon_obstacle/wall/reinforced,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
+/obj/component_adder/trigger{
+	id = "event_key_1"
 	},
+/obj/dungeon_switch,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "EO" = (
-/obj/multipoint_trigger/puzzle{
-	trigger_id = "portal_example_1"
+/obj/dungeon_obstacle/wall/cult,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"FY" = (
+/obj/multipoint/barrier,
+/obj/component_adder/reciever{
+	color = "cyan";
+	id = "e2"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Gk" = (
-/obj/listener/wall,
+/obj/item/objective,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Gz" = (
-/obj/item/weapon/paper{
-	info = "With the /reusable subtype and a /toggle subtype of /event_obstical, it is possible to create obsticles that can be toggled back and forth. This can make for some very interesting puzzles.";
-	name = "/event_key/reusable example"
-	},
+/obj/dungeon_obstacle/wall/reinforced,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "HU" = (
-/obj/listener{
-	listener_id = "listener_example";
-	password_list = list("example")
+/obj/item/weapon/paper{
+	info = "Objectives are a generic item that is easy to track. They are intended to have their name, description,  icon and/or icon_state changed. They don’t really do anything on their own, but they can be tracked using the fun > report objectives verb, which will print all of their current locations, along with a convenient jump link!";
+	name = "/objective"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
@@ -299,25 +325,18 @@
 	},
 /area/submap/admin_upload/powlit)
 "JH" = (
-/obj/item/key/big,
-/turf/unsimulated/spookygrass{
-	color = "#666666"
-	},
+/obj/dungeon_obstacle/wall,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "JU" = (
 /obj/item/weapon/paper{
 	info = "The /event_key is a simple triggering mechanism which reacts to being clicked on, or having items thrown at it to trigger. The base type can only be triggered one time. The /reusable subtype can be triggered repeatedly, which can be useful for things like togglable obsticals. ----- Important variables: id";
 	name = "/event_key"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Kt" = (
-/obj/item/weapon/paper{
-	info = "/puzzle switches like these can all be triggered by only one person! Because their trigger_id is the same, they all need to be pressed to activate their teleporter.";
-	name = "/puzzle example"
-	},
+/obj/item/key/scifi/big/magenta,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "LQ" = (
@@ -330,29 +349,19 @@
 	},
 /area/submap/admin_upload/powlit)
 "MH" = (
-/obj/dungeon_switch,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
-	},
+/obj/dungeon_obstacle/pillar,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "NP" = (
-/obj/multipoint/teleporter{
-	teleport_id = "event_example";
-	trigger_id = "portal_example_1"
-	},
+/obj/item/key/scifi/blue,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Oe" = (
-/obj/structure/simple_door/iron{
-	lock_id = "listener_example"
-	},
+/obj/effect/bus_spawner,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "OH" = (
-/obj/item/weapon/paper{
-	info = "The /event_key can be triggered by clicking on it, or by impacting it with a thrown object!";
-	name = "/event_key example"
-	},
+/obj/dungeon_obstacle/obstical,
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Qz" = (
@@ -362,69 +371,94 @@
 /obj/trait_adder{
 	trait = "REPLACE ME WITH A TRAIT PATH"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#666666"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Sp" = (
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
+/obj/structure/portal_event,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"Tm" = (
+/obj/item/key/big,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Ur" = (
-/obj/dungeon_obstacle/wall,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
+/obj/structure/simple_door/iron,
+/obj/component_adder/lock{
+	color = "yellow";
+	id = "le1"
 	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "UH" = (
-/obj/item/key,
-/turf/unsimulated/spookygrass{
-	color = "#666666"
+/obj/item/key/card/yellow,
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"VL" = (
+/obj/multipoint_trigger,
+/obj/component_adder/trigger{
+	color = "cyan";
+	id = "e2"
 	},
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"VS" = (
+/obj/item/weapon/paper{
+	info = "This object simply blocks things, and can be easily colored. Unlike /event_obstical you can usually see through /barrier, this can allow a barrier to be bypassed by targetted short range teleportation, such as bluespace harpoons. You can set the 'opacity' variable to 1 if you want it to also block sight. Barriers automatically set the 'block_phase_shift' variable of any area they appear in to 1, preventing phase shifting creatures from easily bypassing them. ----- Important variables: trigger_id";
+	name = "/barrier"
+	},
+/turf/unsimulated/spookygrass,
+/area/submap/admin_upload/powlit)
+"Xf" = (
+/obj/item/weapon/paper{
+	info = "Contrary to its name, the bus_spawner does not spawn buses. The bus_spawner allows you to spawn things with modified properties repeatedly. So for example if you want to be able to repeatedly dispense an object with an altered sprite, name, and description, this would allow you to do that without manually editing them over and over. The bus spawner needs a type path to function. To get started, you will need to click on the object, where you can enter a partial path. From there it will run through each of the variables it supports. After it is set up, clicking on it again will spawn whatever you configured it to spawn!";
+	name = "/bus_spawner"
+	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Yc" = (
-/obj/item/weapon/paper{
-	info = "/teleporter starts inactive, and can be activated by certain trigger objects! Teleporters will only be triggered by things seeking to trigger their trigger_id, and will only teleport to teleporters that share their teleporter_id. If you give different teleporters different trigger_ids but the same teleporter_id, the teleporters will work as one way teleporters until both sides are triggered.";
-	name = "/teleporter example"
+/obj/dungeon_obstacle/disguised,
+/obj/component_adder/lock{
+	color = "yellow";
+	id = "le1"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "YB" = (
 /obj/item/weapon/paper{
-	info = "This object simply blocks things, and can be easily colored. Unlike /event_obstical you can usually see through /barrier, this can allow a barrier to be bypassed by targetted short range teleportation, such as bluespace harpoons. You can set the 'opacity' variable to 1 if you want it to also block sight. Barriers automatically set the 'block_phase_shift' variable of any area they appear in to 1, preventing phase shifting creatures from easily bypassing them. ----- Important variables: trigger_id";
-	name = "/barrier"
+	info = "Each of these obsticals works the same way, they just come in many flavors. Normally once these are triggered, they are destroyed. There are /toggle variants of certain ones which will instead toggle between a passable and impassable state, which can allow for more complicated puzzles. ----- Important variables: id";
+	name = "/event_obstical"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "YY" = (
-/obj/dungeon_switch{
-	id = "event_key_2"
+/obj/multipoint/teleporter,
+/obj/component_adder/lock{
+	color = "yellow";
+	id = "le1"
+	},
+/obj/component_adder/pair{
+	id = "linka"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Ze" = (
-/obj/multipoint_trigger{
-	trigger_id = "portal_example_2"
+/obj/machinery/door/blast/angled,
+/obj/component_adder/lock{
+	color = "yellow";
+	id = "le1"
 	},
 /turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "Zi" = (
-/obj/dungeon_obstacle/obstical,
-/turf/unsimulated/spookygrass{
-	color = "#8a0000"
-	},
+/obj/listener/wall,
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 "ZY" = (
 /obj/item/weapon/paper{
 	info = "This teleporter is inactive by default, it can be activated by /multipoint_trigger and /listener which match its trigger_id. If triggered, it will search for any other /teleporter with a matching teleport_id. If it finds one, it will activate. It is important to note, that the teleporter can be complicated, as it can link to other teleporters with different trigger_ids, which can create one way teleports. Additionally, if you create multiple teleporters with the same teleport_id, then when the players teleport, it will pick a random teleporter, minus itself, which can be used to confusing effect. ----- Important variables: trigger_id - teleport_id";
 	name = "/teleporter"
 	},
-/turf/unsimulated/spookygrass{
-	color = "#00058a"
-	},
+/turf/unsimulated/spookygrass,
 /area/submap/admin_upload/powlit)
 
 (1,1,1) = {"
@@ -825,26 +859,26 @@ jk
 jk
 jk
 jk
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
+Qz
+Gk
+HU
+Qz
+Oe
+Xf
+Qz
 QC
 Aw
 jk
@@ -964,6 +998,22 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
+Qz
+Qz
+Qz
+Qz
+kn
+Qz
+Qz
+Qz
+Qz
+Qz
+jk
+jk
+jk
 Qz
 Qz
 Qz
@@ -973,22 +1023,6 @@ Qz
 Qz
 Qz
 Qz
-Qz
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
 jk
 LQ
 jk
@@ -1106,29 +1140,29 @@ CW
 CW
 jk
 jk
-Qz
-Qz
-Qz
-Qz
-NP
-Qz
-Qz
-Qz
-Qz
-Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
+Qz
+Qz
 dS
-dS
-dS
-dS
-dS
-MH
+Qz
+Qz
+Qz
+ru
+Qz
+Qz
+Qz
+jk
+jk
+jk
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 CP
 JU
 jk
@@ -1248,31 +1282,31 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
 Qz
 Qz
-Ze
+er
+Qz
+ly
 Qz
 Qz
-Qz
-EO
-Qz
-Qz
+nu
+ru
 Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-dS
-dS
-dS
-dS
-dS
-dS
-dS
-dS
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+VL
+aC
 JE
 jk
 jk
@@ -1390,29 +1424,29 @@ CW
 CW
 jk
 jk
-Ze
-Qz
-nd
-Qz
-Yc
-Qz
-Qz
-Kt
-EO
-Qz
-jk
 jk
 jk
 jk
 Qz
 Qz
+dS
 Qz
-yA
-Ee
-Ur
+Qz
+Qz
 ru
+Qz
+Qz
+Qz
+jk
+jk
+jk
+Qz
+Qz
+Qz
+Qz
+Qz
 Zi
-bK
+Qz
 rK
 xa
 jk
@@ -1532,31 +1566,31 @@ CW
 CW
 jk
 jk
-Qz
-Qz
-Ze
-Qz
-Qz
-Qz
-EO
-Qz
-Qz
-Qz
-jk
 jk
 jk
 jk
 Qz
+Qz
+Qz
+Qz
+lN
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -1674,11 +1708,14 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
 Qz
 Qz
 Qz
 Qz
-bC
+Qz
 Qz
 Qz
 Qz
@@ -1687,16 +1724,13 @@ Qz
 jk
 jk
 jk
-jk
+EO
+Gz
+JH
+MH
+OH
+Yc
 Qz
-Qz
-Qz
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
 By
 YB
 jk
@@ -1816,31 +1850,31 @@ CW
 CW
 jk
 jk
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
 jk
 jk
 jk
 jk
 Qz
-jk
-jk
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+FY
+VS
 jk
 jk
 jk
@@ -1961,26 +1995,26 @@ jk
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+bK
 jk
 jk
 jk
 Qz
 Qz
 Qz
+Qz
 Sp
-Sp
-Sp
-Sp
-Sp
-Sp
+YY
+Qz
 pA
 ZY
 jk
@@ -2100,31 +2134,31 @@ CW
 CW
 jk
 jk
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-kn
-jk
 jk
 jk
 jk
 Qz
+bK
+Qz
+Qz
+oz
+oz
+oz
+oz
+oz
+Qz
 jk
 jk
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
-Sp
+jk
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 In
 jk
 jk
@@ -2242,31 +2276,31 @@ CW
 CW
 jk
 jk
-Qz
-kn
-Qz
-Qz
-wc
-wc
-wc
-wc
-wc
-Qz
-jk
 jk
 jk
 jk
 Qz
+Qz
+Qz
+Qz
+oz
+mB
+Qz
+yA
+oz
+Qz
 jk
 jk
-Sp
-Sp
-Sp
-Sp
-Sp
-dn
+jk
+Qz
+Qz
+Qz
+Qz
+Ur
+Ze
+Qz
 aH
-uA
+ZY
 jk
 jk
 jk
@@ -2384,31 +2418,31 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
 Qz
+cf
+gA
 Qz
-Qz
-Qz
+oz
 wc
-Oe
 Qz
-ly
-wc
 Qz
-jk
-jk
-jk
-jk
+oz
 Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -2526,17 +2560,6 @@ CW
 CW
 jk
 jk
-Qz
-HU
-dj
-Qz
-wc
-nv
-Qz
-Qz
-wc
-Qz
-jk
 jk
 jk
 jk
@@ -2544,11 +2567,22 @@ Qz
 Qz
 Qz
 Qz
+oz
+nd
+Qz
+yA
+oz
+Qz
+jk
+jk
+jk
 Qz
 Qz
+Kt
+NP
+UH
+Tm
 Qz
-Qz
-Gk
 dZ
 uw
 jk
@@ -2668,31 +2702,31 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
+Qz
+bK
+Qz
+Qz
+oz
+oz
+oz
+oz
+oz
+Qz
+jk
+jk
+jk
 Qz
 Qz
 Qz
 Qz
-wc
-er
 Qz
-ly
-wc
 Qz
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -2810,31 +2844,31 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
 Qz
-kn
 Qz
 Qz
-wc
-wc
-wc
-wc
-wc
 Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+bK
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-JH
-cf
-UH
-lN
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -2952,6 +2986,22 @@ CW
 CW
 jk
 jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
 Qz
 Qz
 Qz
@@ -2961,22 +3011,6 @@ Qz
 Qz
 Qz
 Qz
-kn
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
 jk
 jk
 jk
@@ -3097,28 +3131,28 @@ jk
 jk
 jk
 jk
+bC
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-vw
-mB
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -3236,7 +3270,22 @@ CW
 CW
 jk
 jk
-oz
+jk
+jk
+jk
+bC
+dj
+ih
+Qz
+Qz
+Qz
+uA
+yH
+Ee
+Qz
+jk
+jk
+jk
 Qz
 Qz
 Qz
@@ -3246,21 +3295,6 @@ Qz
 Qz
 Qz
 Qz
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
 jk
 jk
 jk
@@ -3378,31 +3412,31 @@ CW
 CW
 jk
 jk
-oz
-yH
-OH
+jk
+jk
+jk
+bC
 Qz
 Qz
 Qz
-xS
-Gz
-yH
+Qz
+Qz
+Qz
+Qz
+Qz
 Qz
 jk
 jk
 jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-jk
-gA
-ih
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -3520,19 +3554,19 @@ CW
 CW
 jk
 jk
-oz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
 jk
 jk
 jk
+bC
+Qz
+Qz
+Qz
+Qz
+nv
+nv
+nv
+Qz
+Qz
 jk
 jk
 jk
@@ -3662,19 +3696,19 @@ CW
 CW
 jk
 jk
-oz
-Qz
-Qz
-Qz
-Qz
-kC
-kC
-kC
-Qz
-Qz
 jk
 jk
 jk
+bC
+dn
+Qz
+Qz
+Qz
+nv
+vw
+nv
+Qz
+Qz
 jk
 jk
 jk
@@ -3804,19 +3838,19 @@ CW
 CW
 jk
 jk
-oz
-nu
-Qz
-Qz
-Qz
-kC
-YY
-kC
-Qz
-Qz
 jk
 jk
 jk
+bC
+Qz
+Qz
+Qz
+Qz
+nv
+nv
+nv
+Qz
+Qz
 jk
 jk
 jk
@@ -3946,19 +3980,19 @@ CW
 CW
 jk
 jk
-oz
-Qz
-Qz
-Qz
-Qz
-kC
-kC
-kC
-Qz
-Qz
 jk
 jk
 jk
+bC
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
+Qz
 jk
 jk
 jk
@@ -4088,16 +4122,16 @@ CW
 CW
 jk
 jk
-oz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
-Qz
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
+jk
 jk
 jk
 jk

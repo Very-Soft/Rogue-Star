@@ -60,6 +60,7 @@
 // Parameters: None
 // Description: Updates icon of this object. Uses icon state variables.
 /obj/machinery/door/blast/update_icon()
+	SEND_SIGNAL(src,COMSIG_ATOM_UPDATE_ICON)	//RS ADD
 	if(density)
 		icon_state = icon_state_closed
 	else
@@ -152,6 +153,12 @@
 // Description: If we are clicked with crowbar, wielded fire axe, or armblade, try to manually open the door.
 // This only works on broken doors or doors without power. Also allows repair with Plasteel.
 /obj/machinery/door/blast/attackby(obj/item/weapon/C as obj, mob/user as mob)
+	if(SEND_SIGNAL(src, COMSIG_PARENT_ATTACKBY, C, user) & COMPONENT_CANCEL_ATTACK_CHAIN)	//RS ADD START
+		return TRUE
+	if(islocked())
+		if(C.getkey())
+			return		//RS ADD END
+
 	src.add_fingerprint(user)
 	if(istype(C, /obj/item/weapon)) // For reasons unknown, sometimes C is actually not what it is advertised as, like a mob.
 		if(C.pry == 1 && (user.a_intent != I_HURT || (stat & BROKEN))) // Can we pry it open with something, like a crowbar/fireaxe/lingblade?
