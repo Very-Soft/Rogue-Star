@@ -1679,8 +1679,6 @@
 #include "code\game\Rogue Star\waddle.dm"
 #include "code\game\Rogue Star\_Component\component_adder.dm"
 #include "code\game\Rogue Star\_Component\dungeon_component.dm"
-#include "code\game\Rogue Star\_HELPERS\mobs.dm"
-#include "code\game\Rogue Star\_HELPERS\teleport.dm"
 #include "code\game\Rogue Star\abilities\return.dm"
 #include "code\game\Rogue Star\abilities\search.dm"
 #include "code\game\Rogue Star\catborgs\catborgs.dm"
