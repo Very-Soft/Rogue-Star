@@ -539,6 +539,7 @@
 				L.toggle_hud_vis()
 		if((L.stat != DEAD) && L.ai_holder)
 			L.ai_holder.go_wake()
+		L.reset_view_after_container_exit() // RS Add: Fix tum camera bug (Lira, April 2026)
 
 	// Begin RS edit
 	if (istype(owner, /mob/living/carbon/human))
@@ -838,10 +839,20 @@
 		slip.slip_protect = world.time + 25 // This is to prevent slipping back into your pred if they stand on soap or something.
 	//Place them into our drop_location
 	M.forceMove(drop_location())
-	if(ismob(M))
-		var/mob/ourmob = M
-		ourmob.reset_view(null)
+	// RS Edit Start: Fix tum camera bug (Lira, April 2026)
+	if(isliving(M))
+		var/mob/living/released_mob = M
+		released_mob.reset_view_after_container_exit()
+	else if(ismob(M))
+		var/mob/released_mob_generic = M
+		released_mob_generic.reset_view(null)
+	// RS Edit End
 	items_preserved -= M
+	// RS Add: Persistent memory system (Lira, May 2026)
+	if(isliving(owner) && isliving(M))
+		var/mob/living/release_pred = owner
+		var/mob/living/release_prey = M
+		record_character_memory_pair(release_pred, release_prey, "vore_release", "as_pred", "as_prey", name)
 
 	//Special treatment for absorbed prey
 	if(isliving(M))
@@ -930,6 +941,11 @@
 	if(ismob(prey))
 		var/mob/ourmob = prey
 		ourmob.reset_view(owner)
+	// RS Add: Persistent memory system (Lira, May 2026)
+	if(isliving(owner) && isliving(prey))
+		var/mob/living/place_pred = owner
+		var/mob/living/place_prey = prey
+		record_character_memory_pair(place_pred, place_prey, "vore_place", "as_pred", "as_prey", name)
 	owner.updateVRPanel()
 	if(isanimal(owner))
 		owner.update_icon()
@@ -1233,6 +1249,10 @@
 		handle_absorb_langs(M, owner)
 
 		GLOB.prey_absorbed_roundstat++
+	// RS Add: Persistent memory system (Lira, May 2026)
+	if(isliving(owner))
+		var/mob/living/absorb_pred = owner
+		record_character_memory_pair(absorb_pred, M, "vore_absorb", "as_pred", "as_prey", name)
 
 	to_chat(M, "<span class='notice'>[absorb_alert_prey]</span>")
 	to_chat(owner, "<span class='notice'>[absorb_alert_owner]</span>")
@@ -1321,6 +1341,10 @@
 
 	M.absorbed = FALSE
 	handle_absorb_langs(M, owner)
+	// RS Add: Persistent memory system (Lira, May 2026)
+	if(isliving(owner))
+		var/mob/living/unabsorb_pred = owner
+		record_character_memory_pair(unabsorb_pred, M, "vore_unabsorb", "as_pred", "as_prey", name)
 	to_chat(M, "<span class='notice'>[unabsorb_alert_prey]</span>")
 	to_chat(owner, "<span class='notice'>[unabsorb_alert_owner]</span>")
 
@@ -1893,6 +1917,20 @@
 /obj/belly/proc/transfer_contents(atom/movable/content, obj/belly/target, silent = 0)
 	if(!(content in src) || !istype(target))
 		return
+	// RS Add: Persistent memory system (Lira, May 2026)
+	if(isliving(content))
+		var/mob/living/transfer_prey = content
+		var/transfer_detail = character_memory_belly_transfer_detail(src, target)
+		if(isliving(owner) && owner == target.owner)
+			var/mob/living/transfer_pred = owner
+			record_character_memory_pair(transfer_pred, transfer_prey, "vore_transfer", "as_pred", "as_prey", transfer_detail)
+		else
+			if(isliving(owner))
+				var/mob/living/source_pred = owner
+				record_character_memory_pair(source_pred, transfer_prey, "vore_transfer", "as_source_pred", "as_prey", transfer_detail)
+			if(isliving(target.owner))
+				var/mob/living/target_pred = target.owner
+				record_character_memory_pair(target_pred, transfer_prey, "vore_transfer", "as_target_pred", "as_prey", transfer_detail)
 	content.forceMove(target)
 	if(ismob(content) && !isobserver(content)) //RSEdit: Ports VOREStation PR15918 | Fixes bug where camera is not set to follow the ghost
 		var/mob/ourmob = content
