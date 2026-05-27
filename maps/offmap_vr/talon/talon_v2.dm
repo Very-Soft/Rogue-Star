@@ -9,10 +9,6 @@ var/global/list/latejoin_talon = list()
 	latejoin_talon += loc // Register this turf as tram latejoin.
 	..()
 
-/datum/map_z_level/talon // RS Add
-	name = "Talon"
-	flags = MAP_LEVEL_PLAYER | MAP_LEVEL_CONTACT | MAP_LEVEL_OFFMAP
-
 /datum/spawnpoint/talon
 	display_name = "ITV Talon Cryo"
 	restrict_job = list("Talon Captain", "Talon Pilot", "Talon Engineer", "Talon Doctor", "Talon Guard", "Talon Miner")
@@ -62,24 +58,15 @@ var/global/list/latejoin_talon = list()
 	unowned_areas = list(/area/shuttle/talonboat,/area/shuttle/talonpod)
 
 /obj/effect/overmap/visitable/ship/talon/New(loc, ...)	//RS ADD START - Map swap related
-	. = ..()
-	// Map Swap
-	if(global.using_map)
-		levels_for_distress += using_map.z_list["z_beach"]
-		levels_for_distress += using_map.z_list["z_aerostat"]
-		levels_for_distress += using_map.z_list["z_debrisfield"]
-		levels_for_distress += using_map.z_list["z_fueldepot"]
+	levels_for_distress += using_map.z_list["z_beach"]
+	levels_for_distress += using_map.z_list["z_aerostat"]
+	levels_for_distress += using_map.z_list["z_debrisfield"]
+	levels_for_distress += using_map.z_list["z_fueldepot"]
+	. = ..()	//RS ADD END
 
-	// Launching the delayed check (RS ADD)
-	spawn(1)
+	spawn(1)//RS ADD
 		var/my_z = src.z
 		if(my_z && global.using_map)
-			var/datum/map_z_level/T = global.using_map.zlevels["[my_z]"]
-			if(!T)
-				T = new /datum/map_z_level/talon(global.using_map)
-				T.z = my_z
-				global.using_map.zlevels["[my_z]"] = T
-			// Filling in the static map lists
 			global.using_map.offmap_levels |= my_z
 			global.using_map.player_levels |= my_z
 			global.using_map.contact_levels |= my_z
