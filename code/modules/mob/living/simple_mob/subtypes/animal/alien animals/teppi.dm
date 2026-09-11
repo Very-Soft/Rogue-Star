@@ -1245,9 +1245,12 @@ GLOBAL_VAR_INIT(teppi_count, 0)	// How mant teppi DO we have?
 
 /mob/living/simple_mob/vore/alienanimals/teppi/mob_bank_load(mob/living/user, var/list/load)
 	. = ..()
-	if(user?.etching?.pet_data?.len > 0)
-		load = user.etching.pet_data.Copy()
-		affinity[user.real_name] += load["affinity"]
+	if(user)
+		if(user.etching?.pet_data?.len > 0)
+			load = user.etching.pet_data.Copy()
+		else
+			load_owner = user.ckey
+		affinity[user.real_name] = load["affinity"]
 	else
 		load_owner = "STATION"
 	allergen_preference = load["allergen_preference"]
@@ -1262,5 +1265,4 @@ GLOBAL_VAR_INIT(teppi_count, 0)	// How mant teppi DO we have?
 	marking_type = load["marking_type"]
 	horn_type = load["horn_type"]
 	affection_factor = load["affection_factor"]
-
 	update_icon()

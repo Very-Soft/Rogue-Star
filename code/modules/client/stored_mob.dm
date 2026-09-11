@@ -213,6 +213,7 @@
 		return FALSE
 	var/mob/living/simple_mob/M = user.etching.pet_load(get_turf(src))
 	if(!M)
+		//Backwards compatibility
 		var/path = persist_mob_savefile_path(user)
 		if(!path)
 			return FALSE
