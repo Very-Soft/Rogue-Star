@@ -79,20 +79,24 @@
 		return
 	if(IsGuestKey(user.key))
 		return
-
+	if(!user.etching)
+		return
 	if(user.ckey in mob_savers)
 		to_chat(user, "<span class = 'warning'>You have already registered a pet this shift, and can not register another until next shift. Sorry about that!</span>")
 		return
 	if(!ourmob.save_conditions(user))
 		to_chat(user, "<span class = 'warning'>\The [ourmob] can not be registered into the PET system.</span>")
 		return
+/*	//Etching doesn't care about what slot you have loaded so neither do we
 	if(user.real_name != user.client.prefs.real_name)
 		to_chat(user, "<span class = 'warning'>The slot you have selected in character setup is mismatched with the character you are playing as. In order to use the PET system, please select the slot that matches your character.</span>")
 		return
+*/
 	busy_bank = TRUE
 	var/whatname = tgui_input_text(user, "What name do you want to register for \the [ourmob]? (25 characters)", "Pet name?", ourmob.name, max_length = 25)
 	if(length(whatname) > 25)
 		to_chat(user, "<span class = 'warning'>[whatname] is too long. (25 characters)</span>")
+		busy_bank = FALSE
 		return
 	if(!whatname)
 		busy_bank = FALSE
@@ -133,25 +137,27 @@
 		update_icon()
 		return
 
-	var/path = persist_mob_savefile_path(user)
-
-	if(path)
+//	var/path = persist_mob_savefile_path(user)
+/*	if(path)
 		if(fexists(path))
 			var/list/load = json_decode(file2text(path))
 			if(load)
 				var/ourtype = load["type"]
 				if(ourtype)
-					if(tgui_alert(user, "It appears that you already have a pet registered! Are you sure you would like to overwrite your existing pet?", "[src]", list("No", "Yes"), timeout = 10 SECONDS) != "Yes")
-						busy_bank = FALSE
-						visible_message("<span class='warning'>\The [src] boops sadly...</span>", runemessage = "boop...")
-						update_icon()
-						return
+*/
+	if(user.etching.pet_data["type"])
+		if(tgui_alert(user, "It appears that you already have a pet registered! Are you sure you would like to overwrite your existing pet?", "[src]", list("No", "Yes"), timeout = 10 SECONDS) != "Yes")
+			busy_bank = FALSE
+			visible_message("<span class='warning'>\The [src] boops sadly...</span>", runemessage = "boop...")
+			update_icon()
+			return
+
 	ourmob.name = whatname
 	ourmob.real_name = whatname
 	ourmob.load_owner = user.ckey
 	ourmob.faction = user.faction
 	ourmob.hunter = FALSE
-	var/list/to_save = ourmob.mob_bank_save(user)
+//	var/list/to_save = ourmob.mob_bank_save(user)
 	ourmob.verbs += /mob/living/simple_mob/proc/toggle_ghostjoin
 	ourmob.verbs += /mob/living/simple_mob/proc/toggle_follow
 	user.verbs += /mob/living/proc/toggle_pet_swap
@@ -165,6 +171,9 @@
 		ourmob.ai_holder.hostile = FALSE
 		ourmob.ai_holder.vore_hostile = FALSE
 
+	user.etching.pet_save(ourmob)	//Save mob to character etching
+
+/*
 	if(!to_save)
 		busy_bank = FALSE
 		visible_message("<span class='warning'>\The [src] boops unhappily. It encountered an error when attempting to save \the [ourmob]'s scan.</span>", runemessage = "boop...")
@@ -188,6 +197,7 @@
 		visible_message("<span class='warning'>\The [src] boops unhappily. It encountered an error when attempting to save \the [ourmob]'s scan.</span>", runemessage = "boop...")
 		update_icon()
 		return
+*/
 	mob_takers |= user.ckey
 	mob_savers |= user.ckey
 	to_chat(user,"<span class = 'notice'>\The [src] completes its scan of \the [ourmob].</span>")
@@ -199,41 +209,55 @@
 /obj/machinery/mob_bank/proc/persist_mob_load(mob/user)
 	if(IsGuestKey(user.key))
 		return FALSE
-
-	var/path = persist_mob_savefile_path(user)
-
-	if(!path)
+	if(!user.etching)
 		return FALSE
-	if(!fexists(path))
-		return FALSE
+	var/mob/living/simple_mob/M = user.etching.pet_load(get_turf(src))
+	if(!M)
+		//Backwards compatibility
+		var/path = persist_mob_savefile_path(user)
+		if(!path)
+			return FALSE
+		if(!fexists(path))
+			return FALSE
 
-	var/list/load = json_decode(file2text(path))
-	if(!load)
-		return FALSE
+		var/list/load = json_decode(file2text(path))
+		if(!load)
+			return FALSE
 
-	var/ourtype = load["type"]
+		var/ourtype = load["type"]
 
-	var/mob/living/simple_mob/M = new ourtype(get_turf(src))
-	M.mob_bank_load(user, load)
-	M.faction = user.faction
-	M.hunter = FALSE
-	M.desc += " It has a PET tag: \"[M.real_name]\", if lost, return to [user.real_name]."
-	M.revivedby = user.real_name
+		M = new ourtype(get_turf(src))
+		M.mob_bank_load(user, load)
+		M.name = load["name"]
+		M.real_name = M.name
+		M.load_owner = user.ckey
+		M.faction = user.faction
+		M.hunter = FALSE
+		M.desc += " It has a PET tag: \"[M.real_name]\", if lost, return to [user.real_name]."
+		M.revivedby = user.real_name
+		M.verbs += /mob/living/simple_mob/proc/toggle_ghostjoin
+		M.verbs += /mob/living/simple_mob/proc/toggle_follow
+		if(M.ai_holder?.hostile)
+			M.verbs += /mob/living/simple_mob/proc/toggle_hostile
+			M.ai_holder.hostile = FALSE
+			M.ai_holder.vore_hostile = FALSE
+		if(!user.client.multichar_last)
+			user.client.multichar_list |= M
+			user.client.multichar_list |= user
+			user.client.multichar_last = M
+			user.verbs += /mob/living/proc/toggle_pet_swap
+			M.verbs += /mob/living/proc/toggle_pet_swap
+		if(M)
+			if(user.etching.pet_save(M))
+				if(user.etching.pet_data["type"])
+					log_debug("PET FILE ADAPTED TO ETCHING FORMAT, DELETING FILE, DATA FOLLOWS - [load["type"]] - [user.etching.pet_data["type"]] | [load[name]] - [user.etching.pet_data["name"]]")
+					fdel(path)
+			else
+				log_debug("[user] ATTEMPTED TO LEGACY LOAD PET BUT PET SAVE FAILED, ABORTING FILE DELETE - [user] - [load["type"]] - [path]")
+
 	to_chat(user,"<span class = 'notice'>\The [M] appears from \the [src]!</span>")
 	log_admin("[key_name_admin(user)] retrieved [M] - [M.type] from the mob bank.")
 	mob_takers += user.ckey
-	M.verbs += /mob/living/simple_mob/proc/toggle_ghostjoin
-	M.verbs += /mob/living/simple_mob/proc/toggle_follow
-	if(M.ai_holder?.hostile)
-		M.verbs += /mob/living/simple_mob/proc/toggle_hostile
-		M.ai_holder.hostile = FALSE
-		M.ai_holder.vore_hostile = FALSE
-	if(!user.client.multichar_last)
-		user.client.multichar_list |= M
-		user.client.multichar_list |= user
-		user.client.multichar_last = M
-		user.verbs += /mob/living/proc/toggle_pet_swap
-		M.verbs += /mob/living/proc/toggle_pet_swap
 
 /obj/machinery/mob_bank/MouseDrop_T(mob/living/M, mob/living/user)
 	. = ..()
@@ -243,15 +267,14 @@
 /mob/living/simple_mob
 	var/load_owner = null
 
-/mob/living/simple_mob/proc/mob_bank_save(mob/living/user)
+/mob/living/simple_mob/proc/mob_bank_save(mob/living/user, var/for_station = FALSE)
+	. = list()
+	if(for_station)
+		.["ckey"] = user.ckey
+	.["type"] = type
+	.["name"] = name
 
-	var/list/to_save = list(
-		"ckey" = user.ckey,
-		"type" = type,
-		"name" = name
-		)
-
-	return to_save
+	return .
 
 /mob/living/simple_mob/proc/save_conditions(mob/living/user)
 	if(load_owner == "STATION")
@@ -287,12 +310,10 @@
 	return TRUE
 
 /mob/living/simple_mob/proc/mob_bank_load(mob/living/user, var/list/load)
-	if(user)
-		load_owner = user.ckey
-	else
+	if(!user)
 		load_owner = "STATION"
-	name = load["name"]
-	real_name = name
+		name = load["name"]
+		real_name = name
 
 /mob/living/simple_mob/proc/toggle_ghostjoin()
 	set name = "Toggle Ghost Join"
@@ -387,7 +408,7 @@
 		pet.do_yo_thang_gurrrrllllllll()
 
 /obj/machinery/mob_bank/proc/persist_mob_save_station(mob/user, mob/living/simple_mob/ourmob)
-	var/list/to_save = ourmob.mob_bank_save(user)
+	var/list/to_save = ourmob.mob_bank_save(user, TRUE)
 
 	if(!to_save)
 		return

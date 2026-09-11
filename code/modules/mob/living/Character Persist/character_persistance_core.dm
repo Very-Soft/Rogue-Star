@@ -218,6 +218,8 @@
 	var/needs_saving = FALSE		//For if changes have occured, it will try to save if it can
 	var/save_cooldown = 0
 
+	var/list/pet_data				//Any extra data the pet may have
+
 /datum/etching/New(var/L)
 	if(!L)
 		log_debug("<span class = 'danger'>Etching: No target, delete self</span>")
@@ -313,6 +315,7 @@
 
 	xp = null
 	xp = load["xp"]
+	pet_data = load["pet_data"]
 
 	item_load(load)
 	if(ourmob)
@@ -344,6 +347,7 @@
 		)
 
 	to_save += item_save()
+	to_save["pet_data"] = pet_data
 
 	var/json_to_file
 	try
@@ -428,6 +432,50 @@
 	get_save_path()
 	savable = FALSE
 	ourmob?.character_memory?.enable_event_character() // Persistent memory system (Lira, May 2026)
+
+/datum/etching/proc/pet_save(var/mob/living/simple_mob/M)
+	if(!M)
+		return FALSE
+	var/list/our_data = M.mob_bank_save(ourmob)
+	if(our_data)
+		pet_data = our_data
+
+	needs_saving = TRUE
+	save()
+	return TRUE
+
+/datum/etching/proc/pet_load(var/turf/T)
+	if(!T)
+		return FALSE
+	if(!pet_data)
+		return FALSE
+	if(pet_data.len <= 0)
+		return FALSE
+
+	var/our_pet_type = pet_data["type"]
+
+	var/mob/living/simple_mob/M = new our_pet_type(T)
+	M.load_owner = ourmob.ckey
+	M.name = pet_data["name"]
+	M.real_name = M.name
+	M.mob_bank_load(ourmob)
+	M.faction = ourmob.faction
+	M.hunter = FALSE
+	M.desc += " It has a PET tag: \"[M.real_name]\", if lost, return to [ourmob.real_name]."
+	M.revivedby = ourmob.real_name
+	M.verbs += /mob/living/simple_mob/proc/toggle_ghostjoin
+	M.verbs += /mob/living/simple_mob/proc/toggle_follow
+	if(M.ai_holder?.hostile)
+		M.verbs += /mob/living/simple_mob/proc/toggle_hostile
+		M.ai_holder.hostile = FALSE
+		M.ai_holder.vore_hostile = FALSE
+	if(!ourmob.client.multichar_last)
+		ourmob.client.multichar_list |= M
+		ourmob.client.multichar_list |= ourmob
+		ourmob.client.multichar_last = M
+		ourmob.verbs += /mob/living/proc/toggle_pet_swap
+		M.verbs += /mob/living/proc/toggle_pet_swap
+	return M
 
 /client/view_var_Topic(href, href_list, hsrc)
 	. = ..()
