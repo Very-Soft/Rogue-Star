@@ -248,14 +248,12 @@
 			user.verbs += /mob/living/proc/toggle_pet_swap
 			M.verbs += /mob/living/proc/toggle_pet_swap
 		if(M)
-			if(!user.etching.pet_save(M))
-				log_debug("[user] ATTEMPTED TO LEGACY LOAD PET BUT PET SAVE FAILED, ABORTING FILE DELETE - [path]")
-					return
-			if(user.etching.pet_data["type"])
-				log_debug("PET FILE ADAPTED TO ETCHING FORMAT, DELETING FILE, DATA FOLLOWS - [load["type"]] - [user.etching.pet_data["type"]] | [load[name]] - [user.etching.pet_data["name"]]")
-				fdel(path)
+			if(user.etching.pet_save(M))
+				if(user.etching.pet_data["type"])
+					log_debug("PET FILE ADAPTED TO ETCHING FORMAT, DELETING FILE, DATA FOLLOWS - [load["type"]] - [user.etching.pet_data["type"]] | [load[name]] - [user.etching.pet_data["name"]]")
+					fdel(path)
 			else
-				log_debug("PET BACKWARDS COMPATIBILITY SOMEHOW FAILED TO GENERATE PET DATA! - [user] - [path] - [load["type"]]")
+				log_debug("[user] ATTEMPTED TO LEGACY LOAD PET BUT PET SAVE FAILED, ABORTING FILE DELETE - [user] - [load["type"]] - [path]")
 
 	to_chat(user,"<span class = 'notice'>\The [M] appears from \the [src]!</span>")
 	log_admin("[key_name_admin(user)] retrieved [M] - [M.type] from the mob bank.")
