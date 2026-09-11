@@ -441,6 +441,7 @@
 		pet_data = our_data
 
 	needs_saving = TRUE
+	save()
 	return TRUE
 
 /datum/etching/proc/pet_load(var/turf/T)
