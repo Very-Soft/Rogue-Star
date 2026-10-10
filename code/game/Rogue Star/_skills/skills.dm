@@ -1,5 +1,15 @@
 //RS FILE
-/mob/var/skill_pass = FALSE
-
 /mob/proc/skill_check(var/skill)
-	return skill_pass
+	if(!etching)
+		return FALSE
+	return etching.skill_check(skill)
+
+/datum/etching/proc/skill_check(var/skill, var/rank)
+	var/value = xp[skill]
+	if(!value)
+		return FALSE
+	if(!rank)
+		return TRUE
+	if(value >= rank)
+		return value
+	return FALSE

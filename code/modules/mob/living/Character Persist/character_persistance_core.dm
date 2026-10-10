@@ -388,14 +388,16 @@
 	needs_saving = TRUE
 
 /datum/etching/proc/grant_xp(kind,value,quiet = FALSE,source)
-	xp["[kind]"] += value
+	var/our_xp = xp["[kind]"]
+	var/xp_value = our_xp + value
+	xp["[kind]"] = xp_value
 	if(!quiet)
-		to_chat(ourmob,"<span class = 'notice'>You earned [value] [kind]! New total: ([xp["[kind]"]])</span>")
+		to_chat(ourmob,"<span class = 'notice'>You earned [value] [kind]! New total: ([xp_value])</span>")
 	needs_saving = TRUE
 	if(source)
-		log_admin("earned [value] [kind] XP from [source]. Total: ([xp["[kind]"]])")
+		log_admin("earned [value] [kind] XP from [source]. Total: ([xp_value])")
 	else
-		log_and_message_admins("granted [value] [kind] XP to [ourmob]/[ourmob.ckey]. Total: ([xp["[kind]"]])")
+		log_and_message_admins("granted [value] [kind] XP to [ourmob]/[ourmob.ckey]. Total: ([xp_value])")
 
 /datum/etching/proc/report_status()
 	if(!save_path)
