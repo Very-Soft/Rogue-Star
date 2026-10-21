@@ -298,7 +298,8 @@ var/list/admin_verbs_debug = list(
 	/client/proc/simple_DPS,
 	/datum/admins/proc/view_feedback,
 	/client/proc/rebuild_custom_marking_atlas, // RS Add: Character Designer Cache Enhancements (Lira, September 2026)
-	/client/proc/reload_custom_marking_atlas // RS Add: Character Designer Cache Enhancements (Lira, September 2026)
+	/client/proc/reload_custom_marking_atlas, // RS Add: Character Designer Cache Enhancements (Lira, September 2026)
+	/client/proc/water//RS ADD
 	)
 
 var/list/admin_verbs_paranoid_debug = list(

@@ -2,13 +2,6 @@
 /turf/proc/reagent_interact(var/reagent_id, var/amount)
 	return
 
-/turf/simulated/floor/outdoors
-	var/water = 0
-	var/water_saturation = 0
-	var/mushroom_capacity = 0
-	var/shrooming = 0
-	var/shroom_hospitality = 0
-
 /turf/simulated/floor/outdoors/reagent_interact(reagent_id, amount)
 	if(!reagent_id || !amount)
 		return FALSE
@@ -22,73 +15,12 @@
 	if(water_saturation <= 0)
 		return ..()
 
-/turf/simulated/floor/outdoors/proc/water(var/amount, var/list/sources)
-	if(!amount)
-		return
-	if(water_saturation <= 0)
-		return
-	water += amount
-	if(islist(sources))
-		if(sources.len >= 25)
-			return
-	water_communism(sources)
-	begin_shrooming()
-
-/turf/simulated/floor/outdoors/proc/water_communism(var/list/sources)
-	if(water <= water_saturation * 2)
-		return
-	var/list/viable_neighbors = list()
-	var/search = get_step(src,NORTH)
-	if(assess_neighbor(search))
-		viable_neighbors += search
-	search = get_step(src,SOUTH)
-	if(assess_neighbor(search))
-		viable_neighbors += search
-	search = get_step(src,EAST)
-	if(assess_neighbor(search))
-		viable_neighbors += search
-	search = get_step(src,WEST)
-	if(assess_neighbor(search))
-		viable_neighbors += search
-	if(!islist(sources))
-		for(var/thing in sources)
-		sources = list(src)
-	else
-		sources |= src
-	for(var/thing in viable_neighbors)
-		if(thing in sources)
-			viable_neighbors -= thing
-
-	if(!viable_neighbors.len)
-		return
-	var/total_water = water
-	for(var/turf/simulated/floor/outdoors/thing in viable_neighbors)
-		total_water += thing.water
-
-	var/average_water = total_water / (viable_neighbors.len + 1)
-	if(total_water == average_water)
-		return
-	for(var/turf/simulated/floor/outdoors/thing in viable_neighbors)
-		if(thing in sources)
-			continue
-		var/transfer = min(water, average_water - thing.water)
-		water -= transfer
-		thing.water(transfer, sources)
-
-/turf/simulated/floor/outdoors/proc/assess_neighbor(var/turf/simulated/floor/outdoors/neighbor)
-	if(!istype(neighbor, /turf/simulated/floor/outdoors))
-		return FALSE
-	if(neighbor.water_saturation <= 0)
-
-		return FALSE
-	return neighbor
-
 /turf/simulated/floor/outdoors/proc/begin_shrooming()
 	if(mushroom_capacity <= 0 || shroom_hospitality <= 0)
 		return
 	START_PROCESSING(SSturfs, src)
 
-/turf/simulated/floor/outdoors/process()
+/turf/simulated/floor/outdoors/mushroom_update()
 	if(water < 50)
 		STOP_PROCESSING(SSturfs, src)
 	if(contents.len >= mushroom_capacity)	//I don't really want to iterate through a potentially huge list to check for exactly how many mushrooms there are every tick, we'll just use the contents len, it will be close enough.
@@ -111,11 +43,7 @@
 	shrooming = 0
 	water -= 20
 	var/obj/structure/flora/mushroom/grower/M = new(src)
-
-	M.pixel_x = rand(-14,14)
-	M.pixel_y = rand(-14,14)
-	M.visible_message(span_green("\The [M] appears from \the [src]..."))
-
+	M.visible_message(span_green("\The [M] appears from \the [src]..."),runemessage = "🍄")
 
 /turf/simulated/floor/outdoors/grass
 	water_saturation = 200
@@ -125,16 +53,17 @@
 /turf/simulated/floor/outdoors/dirt
 	water_saturation = 200
 
-/turf/simulated/floor/outdoors/dirt/water(amount)
+/turf/simulated/floor/outdoors/dirt/water_update()
 	. = ..()
 	if(water > 200)
-		mudify()
+		return mudify()
 
 /turf/simulated/floor/outdoors/dirt/proc/mudify()
 	var/stored_water = water
 	var/turf/simulated/floor/outdoors/mud/M = ChangeTurf(/turf/simulated/floor/outdoors/mud, preserve_outdoors = TRUE)
 	M.water = stored_water
 	M.begin_shrooming()
+	return M
 
 /turf/simulated/floor/outdoors/mud
 	water = 200
@@ -177,6 +106,9 @@
 	. = ..()
 	update_icon()
 	START_PROCESSING(SSobj, src)
+	pixel_x = rand(-14,14)
+	pixel_y = rand(2,30)
+	layer = layer - ((y * 0.005) + (pixel_y * 0.0001))
 
 /obj/structure/flora/mushroom/grower/process()
 	var/turf/simulated/floor/outdoors/T = get_turf(src)
@@ -232,3 +164,19 @@
 			icon_state = "[shroom_state]-[rand(1,3)]"
 		if(5)
 			icon_state = "[shroom_state]_prime"
+
+/////DEBUG/////
+
+/client/proc/water()
+	set name = "WATER"
+	set category = "Debug"
+	set desc = "Add 100 water to the turf you are standing on."
+
+	if(!check_rights(R_DEBUG,FALSE,usr))
+		return FALSE
+
+	var/turf/simulated/floor/outdoors/T = get_turf(mob)
+	if(istype(T, /turf/simulated/floor/outdoors))
+		T.water(100)
+		to_chat(mob, SPAN_OCCULT("You add 100 water \the [T]... [T.water]"))
+		playsound(mob, 'sound/effects/sink.ogg', 75, 1)
