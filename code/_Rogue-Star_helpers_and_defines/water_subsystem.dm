@@ -6,60 +6,82 @@ SUBSYSTEM_DEF(rs_water)
 	var/list/spread_instance = list()
 
 /datum/controller/subsystem/rs_water/fire(resumed)
-	for(var/turf/simulated/floor/T in update_queue)
-		T.water_update()
-	for(var/thing in spread_instance)
-		spread(spread_instance[thing])
+	while(update_queue.len)
+		var/turf/simulated/floor/T = update_queue[1]
+		update_queue.Cut(1, 2)
+		if(istype(T) && !QDELETED(T))
+			T.water_update()
+		if(MC_TICK_CHECK)
+			return
+	while(spread_instance.len)
+		var/thing = spread_instance[1]
+		var/input = spread_instance[thing]
 		spread_instance -= thing
+		spread(input)
+		if(MC_TICK_CHECK)
+			return
 
 /datum/controller/subsystem/rs_water/proc/queue_spread(var/input)
-	if(input)
-		if(isturf(input))
-			spread_instance += input
-		else
-			spread_instance["[world.time]"] = input
+	if(istype(input, /turf/simulated/floor))
+		spread_instance[input] = input
+	else if(islist(input) && length(input))
+		var/list/turfs = input
+		turfs = turfs.Copy()
+		spread_instance["\ref[turfs]"] = turfs
 
 /datum/controller/subsystem/rs_water/proc/spread(var/input)
 	to_world("spread - [input]")
 	var/list/to_process
 	var/list/processed = list()
 	var/total_water = 0
-	if(isturf(input))
+	if(istype(input, /turf/simulated/floor))
 		var/turf/simulated/floor/T = input
+		if(QDELETED(T) || T.water_saturation <= 0)
+			return
 		to_process = T.get_viable_waterspread_neighbors()
 		processed |= T
-		total_water += T.water
 	else if(islist(input))
 		to_world("list")
 		to_process = list()
-		processed += input
+		processed |= input
 		for(var/turf/simulated/floor/T in processed)
-			total_water += T.water
-			to_process += T.get_viable_waterspread_neighbors()
+			if(!QDELETED(T) && T.water_saturation > 0)
+				to_process |= T.get_viable_waterspread_neighbors()
+			CHECK_TICK
 	else
 		to_process = list()
-		processed += spread_instance[input]
+		processed |= spread_instance[input]
 		for(var/turf/simulated/floor/T in processed)
-			total_water += T.water
-			to_process += T.get_viable_waterspread_neighbors()
+			if(!QDELETED(T) && T.water_saturation > 0)
+				to_process |= T.get_viable_waterspread_neighbors()
+			CHECK_TICK
 	if(!to_process.len)
 		log_debug("spread got input it couldn't use: [input]")
 		return
-	for(var/turf/simulated/floor/F in to_process)
+	processed |= to_process
+	to_process = list()
+	for(var/turf/simulated/floor/F in processed)
+		if(QDELETED(F) || F.water_saturation <= 0)
+			continue
 		total_water += F.water
-		processed |= F
+		to_process += F
+	processed = to_process
 	if(!total_water)
 		return
 	var/average = total_water / processed.len
 	to_process = list()
 	for(var/turf/simulated/floor/F in processed)
 		F.water = average
+	for(var/turf/simulated/floor/F in processed)
+		if(QDELETED(F))
+			continue
 		var/turf/simulated/floor/post_update = F.water_update()
-		if(post_update.water > post_update.water_saturation)
+		if(!QDELETED(post_update) && post_update.water > post_update.water_saturation)
 			to_process |= post_update
 			post_update.visible_message(runemessage = post_update.water)
+		CHECK_TICK
 
-	spread_instance["[total_water]"] = to_process
+	queue_spread(to_process)
 
 /*
 	for(var/instance in spread_instance)
@@ -152,7 +174,7 @@ SUBSYSTEM_DEF(rs_water)
 
 	var/list/viable_neighbors = list()
 	for(var/turf/simulated/floor/T in search)
-		if(!istype(T,/turf/simulated/floor))
+		if(!istype(T,/turf/simulated/floor) || T.water_saturation <= 0)
 			continue
 //		if(T.water >= T.water_saturation)	//If it's full don't spread
 //			continue
@@ -179,8 +201,9 @@ SUBSYSTEM_DEF(rs_water)
 	if(water_saturation <= 0)
 		return amount
 	water += amount
-	if(water > water_saturation)
-		SSrs_water.spread(src)
+	var/turf/simulated/floor/post_update = water_update()
+	if(!QDELETED(post_update) && post_update.water > post_update.water_saturation)
+		SSrs_water.queue_spread(post_update)
 
 /turf/simulated/floor/proc/mushroom_update()
 	return

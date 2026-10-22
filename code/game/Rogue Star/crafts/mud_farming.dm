@@ -20,9 +20,18 @@
 		return
 	START_PROCESSING(SSturfs, src)
 
+/turf/simulated/floor/outdoors/process()
+	return mushroom_update()
+
+/turf/simulated/floor/outdoors/water_update()
+	. = ..()
+	if(water >= 50)
+		begin_shrooming()
+
 /turf/simulated/floor/outdoors/mushroom_update()
 	if(water < 50)
 		STOP_PROCESSING(SSturfs, src)
+		return
 	if(contents.len >= mushroom_capacity)	//I don't really want to iterate through a potentially huge list to check for exactly how many mushrooms there are every tick, we'll just use the contents len, it will be close enough.
 		return
 	var/howbright = get_lumcount()
