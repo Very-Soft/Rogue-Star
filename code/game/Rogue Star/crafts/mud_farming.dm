@@ -2,6 +2,25 @@
 /turf/proc/reagent_interact(var/reagent_id, var/amount)
 	return
 
+/turf/simulated/floor
+//	var/mushroom_init = TRUE			//If we will attempt to spore or mushroom a turf on init
+	var/mushroom_capacity = 0			//How many mushrooms can grow here
+	var/shrooming = 0					//Progress toward generating a new mushroom
+	var/shroom_hospitality = 0			//How quickly will the mushrooms grow here
+	var/spored = FALSE					//Mushrooms will only grow on turfs with some spores!
+
+/turf/simulated/floor/outdoors/Initialize(mapload)
+	. = ..()
+	if(!mapload)
+		return
+	if(shroom_hospitality)
+		var/chance_time = rand(1,20)
+		if(chance_time > 10)
+			spored = TRUE
+		if(chance_time == 20)
+			var/obj/structure/flora/mushroom/grower/M = shroom()
+			M.full_grow()
+
 /turf/simulated/floor/outdoors/reagent_interact(reagent_id, amount)
 	if(!reagent_id || !amount)
 		return FALSE
@@ -15,8 +34,8 @@
 	if(water_saturation <= 0)
 		return ..()
 
-/turf/simulated/floor/outdoors/proc/begin_shrooming()
-	if(mushroom_capacity <= 0 || shroom_hospitality <= 0)
+/turf/simulated/floor/proc/begin_shrooming()
+	if(mushroom_capacity <= 0 || shroom_hospitality <= 0 || !spored)
 		return
 	START_PROCESSING(SSturfs, src)
 
@@ -36,6 +55,7 @@
 		return
 	var/howbright = get_lumcount()
 	if(howbright > 0.3)
+		water --
 		return
 	var/grow_rate = 0.5
 	if(howbright >= 0.2)
@@ -45,14 +65,15 @@
 	else if(howbright < 0.1)
 		grow_rate = 2
 	shrooming += grow_rate
-	if(shrooming >= 50)
+	if(shrooming >= 100)
 		shroom()
 
 /turf/simulated/floor/outdoors/proc/shroom()
 	shrooming = 0
-	water -= 20
+	water -= 100
 	var/obj/structure/flora/mushroom/grower/M = new(src)
 	M.visible_message(span_green("\The [M] appears from \the [src]..."),runemessage = "🍄")
+	return M
 
 /turf/simulated/floor/outdoors/grass
 	water_saturation = 200
@@ -61,6 +82,7 @@
 
 /turf/simulated/floor/outdoors/dirt
 	water_saturation = 200
+	shroom_hospitality = 0.05
 
 /turf/simulated/floor/outdoors/dirt/water_update()
 	. = ..()
@@ -69,8 +91,10 @@
 
 /turf/simulated/floor/outdoors/dirt/proc/mudify()
 	var/stored_water = water
+	var/oldspore = spored
 	var/turf/simulated/floor/outdoors/mud/M = ChangeTurf(/turf/simulated/floor/outdoors/mud, preserve_outdoors = TRUE)
 	M.water = stored_water
+	spored = oldspore
 	M.begin_shrooming()
 	return M
 
@@ -98,6 +122,32 @@
 					continue
 				START_PROCESSING(SSobj, src)
 
+/turf/simulated/floor/attack_hand(mob/user)
+	. = ..()
+	if(!water_saturation || !water)
+		return
+	if(isliving(user))
+		user.visible_message(SPAN_NOTICE("\The [user] touches \the [src]..."),SPAN_NOTICE("You touch \the [src]..."))
+		var/msg
+		var/saturation_percent = round((water / water_saturation) * 100)
+		switch(saturation_percent)
+			if(90 to INFINITY)
+				msg = "It's soaking wet! If it gets any more wet, the water will probably spread."
+			if(75 to 89)
+				msg = "It's very wet."
+			if(50 to 74)
+				msg = "It's wet."
+			if(25 to 49)
+				msg = "It's damp."
+			if(1 to 24)
+				msg = "It's a little moist."
+			else
+				msg = null
+		if(!msg)
+			return
+
+		to_chat(user,SPAN_OCCULT(msg))
+
 //////🍄🍄🍄🍄🍄//////
 ///🍄 MUSHROOMS!!! 🍄///
 //////🍄🍄🍄🍄🍄//////
@@ -109,6 +159,8 @@
 	icon_state = "shroom-prime"
 	var/shroom_state = "shroom"
 	var/grown = 0
+	var/growth_rate = 0.1
+	var/max_growth = 100
 	var/stage = 1
 
 /obj/structure/flora/mushroom/grower/Initialize()
@@ -118,35 +170,32 @@
 	pixel_x = rand(-14,14)
 	pixel_y = rand(2,30)
 	layer = layer - ((y * 0.005) + (pixel_y * 0.0001))
+	var/turf/simulated/floor/T = get_turf(src)
+	T.spored = TRUE
 
 /obj/structure/flora/mushroom/grower/process()
-	var/turf/simulated/floor/outdoors/T = get_turf(src)
-	if(!istype(T, /turf/simulated/floor/outdoors))
-		STOP_PROCESSING(SSobj, src)
-		return
-	if(T.shroom_hospitality <= 0)
-		STOP_PROCESSING(SSobj, src)
-		return
 	grow()
 
 /obj/structure/flora/mushroom/grower/proc/grow()
-	var/turf/T = get_turf(src)
+	var/turf/simulated/floor/T = get_turf(src)
 	var/hospitality = 0
-	if(istype(T, /turf/simulated/floor/outdoors))
-		var/turf/simulated/floor/outdoors/mush_zone = T
-		hospitality = mush_zone.shroom_hospitality
-	var/howbright = T.get_lumcount()
-	if(howbright > 0.3)
+	if(istype(T, /turf/simulated/floor))
+		hospitality = T.shroom_hospitality
+	if(hospitality <= 0 || T.water <= 0)
+		STOP_PROCESSING(SSobj, src)
 		return
-	var/grow_rate = 0.5
+	var/howbright = T.get_lumcount()
+	if(howbright > 0.4)
+		return
+	var/adjusted_grow_rate = growth_rate
 	if(howbright >= 0.2)
-		grow_rate = 0.5
-	else if(howbright >= 0.1)
-		grow_rate = 1
+		adjusted_grow_rate *= 0.5
 	else if(howbright < 0.1)
-		grow_rate = 2
-	grown += grow_rate * hospitality
-	switch(grown)
+		adjusted_grow_rate *= 2
+	grown += adjusted_grow_rate * hospitality
+
+	var/grow_percent = round((grown / max_growth) * 100)
+	switch(grow_percent)
 		if(0 to 10)
 			stage = 1
 		if(11 to 25)
@@ -156,9 +205,22 @@
 		if(76 to 99)
 			stage = 4
 		if(100 to INFINITY)
-			stage = 5
-			STOP_PROCESSING(SSobj, src)
+			full_grow()
 	update_icon()
+
+/obj/structure/flora/mushroom/grower/proc/full_grow()
+	STOP_PROCESSING(SSobj, src)
+	grown = 100
+	stage = 5
+	update_icon()
+
+/obj/structure/flora/mushroom/grower/proc/spore()
+	var/list/neighbors = oview(1,src)
+	for(var/turf/simulated/floor/T in neighbors)
+		if(istype(T,/turf/simulated/floor))
+			continue
+		if(prob(50))
+			T.spored = TRUE
 
 /obj/structure/flora/mushroom/grower/update_icon()
 	. = ..()

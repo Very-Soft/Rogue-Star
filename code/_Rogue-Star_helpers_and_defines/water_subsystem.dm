@@ -30,7 +30,6 @@ SUBSYSTEM_DEF(rs_water)
 		spread_instance["\ref[turfs]"] = turfs
 
 /datum/controller/subsystem/rs_water/proc/spread(var/input)
-	to_world("spread - [input]")
 	var/list/to_process
 	var/list/processed = list()
 	var/total_water = 0
@@ -41,7 +40,6 @@ SUBSYSTEM_DEF(rs_water)
 		to_process = T.get_viable_waterspread_neighbors()
 		processed |= T
 	else if(islist(input))
-		to_world("list")
 		to_process = list()
 		processed |= input
 		for(var/turf/simulated/floor/T in processed)
@@ -78,7 +76,6 @@ SUBSYSTEM_DEF(rs_water)
 		var/turf/simulated/floor/post_update = F.water_update()
 		if(!QDELETED(post_update) && post_update.water > post_update.water_saturation)
 			to_process |= post_update
-			post_update.visible_message(runemessage = post_update.water)
 		CHECK_TICK
 
 	queue_spread(to_process)
@@ -116,10 +113,6 @@ SUBSYSTEM_DEF(rs_water)
 	var/water = 0						//Current water volume
 	var/water_saturation = 0			//How much can the turf hold before negative effects
 	var/water_flooding_threshold = 0	//How much water before the turf floods
-	var/mushroom_capacity = 0			//How many mushrooms can grow here
-	var/shrooming = 0					//Progress toward generating a new mushroom
-	var/shroom_hospitality = 0			//How quickly will the mushrooms grow here
-	var/spored = FALSE					//Mushrooms will only grow on turfs with some spores!
 
 /turf/simulated/floor/proc/water_spread(var/list/sources)
 	if(water < water_saturation)
