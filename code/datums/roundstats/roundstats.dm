@@ -87,9 +87,10 @@ var/global/list/security_printer_tickets = list()	//VOREStation Edit
 	if(GLOB.items_digested_roundstat > 0)
 		valid_stats_list.Add("A total of [GLOB.items_digested_roundstat] items were digested today!")
 	//VOREStation Add End
-
 	if(LAZYLEN(valid_stats_list))
 		to_world("<B>Shift trivia!</B>")
 
 		for(var/body in valid_stats_list)
 			to_world("[body]")
+
+	report_kob_wars()	//RS ADD

@@ -66,3 +66,6 @@
 
 #define istaurtail(A)	istype(A, /datum/sprite_accessory/tail/taur)
 #define islongtail(A)	istype(A, /datum/sprite_accessory/tail/longtail)
+
+//RS ADD START
+#define iskob(A)		istype(A, /mob/living/simple_mob/vore/kob)

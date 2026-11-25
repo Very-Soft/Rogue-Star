@@ -8,6 +8,14 @@
 	var/datum/etching/etching
 	var/datum/character_memory/character_memory // Persistent memory system (Lira, May 2026)
 	var/admin_magic = FALSE
+	var/do_etching = FALSE
+
+/mob/living/carbon/human
+	do_etching = TRUE
+/mob/living/silicon
+	do_etching = TRUE
+/mob/living/silicon/robot/drone
+	do_etching = FALSE
 
 /mob/living/Initialize()
 	. = ..()
@@ -268,10 +276,11 @@
 	else if(isclient(ourclient))
 		save_path = "data/player_saves/[copytext(ourclient.ckey, 1, 2)]/[ourclient.ckey]/magic/[P.real_name]-etching.json"
 
-
 /datum/etching/proc/load(var/datum/preferences/P)
 	if(ourmob)
 		if(IsGuestKey(ourmob.key))
+			return
+		if(!do_etching)
 			return
 	if(save_path)
 		return
@@ -335,6 +344,8 @@
 /datum/etching/proc/save(delet = FALSE, verify_write = FALSE)
 	if(ourmob)
 		if(IsGuestKey(ourmob.key))
+			return FALSE
+		if(!ourmob.do_etching)
 			return FALSE
 
 	if(!savable || !needs_saving)
